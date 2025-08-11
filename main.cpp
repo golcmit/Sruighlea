@@ -1,6 +1,7 @@
 #include <QApplication>
 #include <QMainWindow>
 #include <QTableView>
+#include <QHeaderView>
 #include <QSqlDatabase>
 #include <QSqlError>
 #include <QSqlQueryModel>
@@ -47,7 +48,9 @@ int main(int argc, char *argv[]) {
     // Create a table view to display the data
     QTableView *view = new QTableView;
     view->setModel(model);
-    view->resizeColumnsToContents(); // Adjust column sizes
+    
+    // Set the resize mode for the horizontal header to stretch
+    view->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
     // Set the table view as the central widget of the main window
     window.setCentralWidget(view);
