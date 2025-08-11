@@ -1,35 +1,59 @@
 #include <QApplication>
-#include <QDebug>
+#include <QMainWindow>
+#include <QTableView>
 #include <QSqlDatabase>
 #include <QSqlError>
-#include <QFile>
+#include <QSqlQueryModel>
+#include <QMessageBox>
+#include <QDebug>
 
-void connectToDatabase() {
+// Function to establish a connection to the database
+bool connectToDatabase() {
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
-    // The database is in the 'reference_materials' subdirectory
-    QString dbPath = "reference_materials/FanacalCharacters.db";
-    db.setDatabaseName(dbPath);
-
-    if (!QFile::exists(dbPath)) {
-        qWarning() << "Database file does not exist at" << dbPath;
-        return;
-    }
+    db.setDatabaseName("reference_materials/FanacalCharacters.db");
 
     if (!db.open()) {
-        qWarning() << "Error: connection with database failed:" << db.lastError().text();
-    } else {
-        qInfo() << "Database: connection ok";
+        QMessageBox::critical(nullptr, "Database Error",
+                              "Failed to connect to the database: " + db.lastError().text());
+        return false;
     }
+    qDebug() << "Database: connection ok";
+    return true;
 }
 
 int main(int argc, char *argv[]) {
     QApplication a(argc, argv);
 
-    connectToDatabase();
+    // Create and set up the main window
+    QMainWindow window;
+    window.setWindowTitle("Sruighlea - Character Database");
+    window.resize(800, 600);
 
-    // For this first step, we don't need to run the event loop.
-    // We just want to test the connection.
-    // In the future, we will add GUI elements and call a.exec().
+    // Connect to the database
+    if (!connectToDatabase()) {
+        return -1; // Exit if connection fails
+    }
 
-    return 0;
+    // Create a model to query the database
+    QSqlQueryModel *model = new QSqlQueryModel;
+    model->setQuery("SELECT c.first_name, c.current_last_name, h.name AS house, c.blood_status FROM characters c LEFT JOIN houses h ON c.house_id = h.id");
+
+    // Set headers for the table view
+    model->setHeaderData(0, Qt::Horizontal, QObject::tr("First Name"));
+    model->setHeaderData(1, Qt::Horizontal, QObject::tr("Last Name"));
+    model->setHeaderData(2, Qt::Horizontal, QObject::tr("House"));
+    model->setHeaderData(3, Qt::Horizontal, QObject::tr("Blood Status"));
+
+    // Create a table view to display the data
+    QTableView *view = new QTableView;
+    view->setModel(model);
+    view->resizeColumnsToContents(); // Adjust column sizes
+
+    // Set the table view as the central widget of the main window
+    window.setCentralWidget(view);
+
+    // Show the main window
+    window.show();
+
+    return a.exec();
 }
