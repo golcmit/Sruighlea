@@ -12,5 +12,6 @@ private slots:
 
     void testFetchCharacterDetails_ValidId_ReturnsData();
     void testFetchCharacterDetails_InvalidId_ReturnsEmpty();
+    void testFetchCharacterDetails_DefaultConnection_ValidId_ReturnsData(); // これを追加
 
 };

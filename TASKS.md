@@ -20,8 +20,9 @@ This ensures that all code is covered by tests, improving robustness and maintai
 ## Milestone 2: Core Functionality
 
 ### Feature: Character Detail View
-- [ ] When a user selects a row in the character list, display all details of that character in a separate panel or window.
-- [ ] Design a clear and readable layout for the detail view.
+- [x] Implement a backend service to fetch character details by ID (TDD Cycle 1).
+- [x] When a user selects a row in the character list, display all details of that character in a separate panel or window.
+- [x] Design a clear and readable layout for the detail view.
 
 ### Feature: Search and Filter
 - [ ] Add a search bar to the main window.

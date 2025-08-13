@@ -6,9 +6,8 @@
 
 void TestCharacterService::initTestCase()
 {
-    // This method is called before the first test case is executed.
-    // We can use it to set up the database connection for all tests.
-    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE", "test_connection");
+    // デフォルトのデータベース接続を確立
+    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE"); // デフォルト接続
     db.setDatabaseName("../reference_materials/FanacalCharacters.db");
     if (!db.open()) {
         qFatal("Failed to open database for testing");
@@ -17,10 +16,9 @@ void TestCharacterService::initTestCase()
 
 void TestCharacterService::cleanupTestCase()
 {
-    // This method is called after the last test case has finished.
-    // We can close the database connection here.
-    QSqlDatabase::database("test_connection").close();
-    QSqlDatabase::removeDatabase("test_connection");
+    // デフォルトのデータベース接続を閉じる
+    QSqlDatabase::database().close(); // デフォルト接続を閉じる
+    QSqlDatabase::removeDatabase(QSqlDatabase::defaultConnection); // デフォルト接続を削除
 }
 
 void TestCharacterService::testFetchCharacterDetails_ValidId_ReturnsData()
@@ -34,6 +32,11 @@ void TestCharacterService::testFetchCharacterDetails_ValidId_ReturnsData()
 
     // ASSERT
     QVERIFY2(details.isValid(), "Test failed: Expected valid data for a valid ID, but got invalid data.");
+    // ここも実際のデータベースのID=1のキャラクターデータに合わせて期待値を修正
+    QCOMPARE(details.firstName, QString("Clover")); // 実際の値に合わせる
+    QCOMPARE(details.lastName, QString("Gowin")); // ここを"Gowin"に修正
+    QCOMPARE(details.house, QString("slytherin")); // ここを"slytherin"に修正
+    QCOMPARE(details.bloodStatus, QString("pure")); // ここを"pure"に修正
 }
 
 void TestCharacterService::testFetchCharacterDetails_InvalidId_ReturnsEmpty()
@@ -46,5 +49,31 @@ void TestCharacterService::testFetchCharacterDetails_InvalidId_ReturnsEmpty()
 
     // ASSERT
     QVERIFY2(!details.isValid(), "Test failed: Expected invalid data for an invalid ID, but got valid data.");
+}
+
+void TestCharacterService::testFetchCharacterDetails_DefaultConnection_ValidId_ReturnsData()
+{
+    // ARRANGE
+    // デフォルトのデータベース接続を確立 (main.cpp と同様)
+    
+
+    CharacterService service;
+
+    // ACT
+    // Assuming a character with ID 1 exists in the test database
+    CharacterData details = service.getCharacterDetails(1);
+
+    // ASSERT
+    QVERIFY2(details.isValid(), "Test failed: Expected valid data for a valid ID using default connection, but got invalid data.");
+    QCOMPARE(details.id, 1); // IDが正しいことを確認
+    // ここで、データベース内のID=1のキャラクターのfirst_nameが"Harry"であることを仮定して検証
+    // 実際のデータベースの内容に合わせて修正してね
+    QCOMPARE(details.firstName, QString("Clover")); // 実際の値に合わせる
+    QCOMPARE(details.lastName, QString("Gowin")); // ここを"Gowin"に修正
+    QCOMPARE(details.house, QString("slytherin")); // ここを"slytherin"に修正
+    QCOMPARE(details.bloodStatus, QString("pure")); // ここを"pure"に修正
+
+    // データベース接続を閉じる
+    
 }
 
