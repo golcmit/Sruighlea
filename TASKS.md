@@ -25,8 +25,8 @@ This ensures that all code is covered by tests, improving robustness and maintai
 - [x] Design a clear and readable layout for the detail view.
 
 ### Feature: Search and Filter
-- [ ] Add a search bar to the main window.
-- [ ] Implement real-time filtering of the character list based on text input (search by first name or last name).
+- [x] Add a search bar to the main window.
+- [x] Implement real-time filtering of the character list based on text input (search by first name or last name).
 
 ### Feature: Add New Character
 - [ ] Add an "Add New Character" button.
@@ -47,6 +47,6 @@ This ensures that all code is covered by tests, improving robustness and maintai
 
 ## Technical Debt & Refactoring
 
-- [ ] Refactor database connection logic into a dedicated singleton or service class.
+- [x] Refactor database connection logic into a dedicated singleton or service class.
 - [ ] Move SQL queries from inline code to a separate constants file or a query manager.
 - [ ] Implement a more robust error handling and logging mechanism.

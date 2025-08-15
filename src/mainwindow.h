@@ -1,30 +1,31 @@
-#pragma once
-
 #include <QMainWindow>
-#include <QTableView>
-#include <QSqlQueryModel>
-#include <QSplitter>
-#include <QTextEdit> // 詳細表示用
-#include "CharacterService.h" // CharacterServiceを使うため
+
+class QTableView;
+class QTextEdit;
+class QSqlQueryModel;
+class CharacterService;
+class QLineEdit;
 
 class MainWindow : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = nullptr);
+    MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
 private slots:
-    void on_characterTableView_clicked(const QModelIndex &index); // キャラクターリストの行がクリックされた時のスロット
+    void on_characterTableView_clicked(const QModelIndex &index);
+    void on_searchTextChanged(const QString &text);
 
 private:
-    void setupDatabaseConnection(); // データベース接続のセットアップ
-    void setupUI(); // UIのセットアップ
-    void loadCharacterList(); // キャラクターリストの読み込み
+    void setupUI();
+    void loadCharacterList();
+    void updateCharacterViewModel(QSqlQueryModel *newModel);
 
     QTableView *characterTableView;
+    QTextEdit *characterDetailsTextEdit;
     QSqlQueryModel *characterListModel;
-    QTextEdit *characterDetailsTextEdit; // キャラクター詳細表示用
-    CharacterService *characterService; // CharacterServiceのインスタンス
+    CharacterService *characterService;
+    QLineEdit *searchLineEdit;
 };

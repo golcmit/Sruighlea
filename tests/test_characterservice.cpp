@@ -1,25 +1,13 @@
 #include "test_characterservice.h"
-#include "../src/CharacterService.h" // This header does not exist yet
+#include "../src/CharacterService.h"
+#include "../src/DatabaseManager.h"
 
 #include <QTest>
 #include <QSqlDatabase>
-
-void TestCharacterService::initTestCase()
-{
-    // デフォルトのデータベース接続を確立
-    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE"); // デフォルト接続
-    db.setDatabaseName("../reference_materials/FanacalCharacters.db");
-    if (!db.open()) {
-        qFatal("Failed to open database for testing");
-    }
-}
-
-void TestCharacterService::cleanupTestCase()
-{
-    // デフォルトのデータベース接続を閉じる
-    QSqlDatabase::database().close(); // デフォルト接続を閉じる
-    QSqlDatabase::removeDatabase(QSqlDatabase::defaultConnection); // デフォルト接続を削除
-}
+#include <QSqlQueryModel>
+#include <QSqlRecord>
+#include <QDate>
+#include <QSqlQuery>
 
 void TestCharacterService::testFetchCharacterDetails_ValidId_ReturnsData()
 {
@@ -75,5 +63,65 @@ void TestCharacterService::testFetchCharacterDetails_DefaultConnection_ValidId_R
 
     // データベース接続を閉じる
     
+}
+
+void TestCharacterService::testSearchCharactersByName_ExistingName_ReturnsMatchingModel()
+{
+    // ARRANGE
+    CharacterService service;
+    QString searchName = "Gowin"; // We know "Clover Gowin" exists from other tests.
+
+    // ACT
+    // This function doesn't exist yet, so this will fail to compile (RED)
+    QSqlQueryModel* model = service.searchCharactersByName(searchName);
+
+    // ASSERT
+    QVERIFY(model != nullptr);
+    QVERIFY2(model->rowCount() > 0, "Model should contain at least one character matching the search term.");
+
+    bool foundClover = false;
+    for (int i = 0; i < model->rowCount(); ++i) {
+        if (model->record(i).value("first_name").toString() == "Clover" &&
+            model->record(i).value("current_last_name").toString() == "Gowin") {
+            foundClover = true;
+            break;
+        }
+    }
+    QVERIFY2(foundClover, "The search results should include 'Clover Gowin'.");
+
+    delete model;
+}
+
+void TestCharacterService::testAddCharacter_ValidData_ReturnsSuccessAndAddsToDb()
+{
+    // ARRANGE
+    CharacterService service;
+    CharacterData newChar;
+    newChar.firstName = "Kaede";
+    newChar.lastName = "Kayano";
+    newChar.house = "slytherin"; // Assuming house name, will need to resolve to house_id
+    newChar.bloodStatus = "pure";
+    newChar.birthDate = QDate(2001, 11, 9);
+
+    // ACT
+    bool result = service.addCharacter(newChar);
+
+    // ASSERT
+    QVERIFY2(result, "addCharacter should return true for valid data.");
+
+    // Verify that the character was actually inserted
+    QSqlQuery query;
+    query.prepare("SELECT id FROM characters WHERE first_name = :firstName AND current_last_name = :lastName");
+    query.bindValue(":firstName", newChar.firstName);
+    query.bindValue(":lastName", newChar.lastName);
+    QVERIFY2(query.exec(), "Query to find new character should execute successfully.");
+
+    QVERIFY2(query.next(), "The new character should be found in the database after adding.");
+    int newId = query.value(0).toInt();
+
+    // CLEANUP
+    query.prepare("DELETE FROM characters WHERE id = :id");
+    query.bindValue(":id", newId);
+    query.exec();
 }
 

@@ -1,0 +1,62 @@
+#include "test_mainwindow.h"
+#include "../src/mainwindow.h"
+#include "../src/DatabaseManager.h"
+#include <QTest>
+#include <QLineEdit>
+#include <QTableView>
+#include <QSqlQueryModel>
+#include <QSqlRecord>
+
+void TestMainWindow::initTestCase()
+{
+    // The database connection is now managed by test_main.cpp
+    mainWindow = new MainWindow();
+    mainWindow->show();
+}
+
+void TestMainWindow::cleanupTestCase()
+{
+    delete mainWindow;
+    // The database connection is now managed by test_main.cpp
+}
+
+void TestMainWindow::testSearchFunctionality_WhenTextEntered_FiltersList()
+{
+    // ARRANGE
+    QLineEdit *searchLineEdit = mainWindow->findChild<QLineEdit*>("searchLineEdit");
+    QTableView *tableView = mainWindow->findChild<QTableView*>();
+
+    QVERIFY2(searchLineEdit, "Could not find a QLineEdit named 'searchLineEdit'");
+    QVERIFY2(tableView, "Could not find the QTableView");
+
+    // Wait for the initial list to load
+    QTest::qWait(500);
+
+    QSqlQueryModel *initialModel = qobject_cast<QSqlQueryModel*>(tableView->model());
+    QVERIFY2(initialModel, "The initial model should not be null");
+    int initialRowCount = initialModel->rowCount();
+    QVERIFY2(initialRowCount > 1, "Initial row count should be greater than 1 to test filtering.");
+
+    // ACT
+    QTest::keyClicks(searchLineEdit, "Gowin");
+    QTest::qWait(500); // Wait for filtering to apply
+
+    // ASSERT
+    // The model is replaced, so we must get it again from the view.
+    QSqlQueryModel *filteredModel = qobject_cast<QSqlQueryModel*>(tableView->model());
+    QVERIFY2(filteredModel, "The filtered model should not be null");
+    QVERIFY2(filteredModel != initialModel, "A new model should have been set");
+
+    int filteredRowCount = filteredModel->rowCount();
+    QVERIFY2(filteredRowCount < initialRowCount, "Row count should decrease after filtering.");
+    QVERIFY2(filteredRowCount > 0, "Filtered row count should be greater than 0.");
+
+    bool foundMatch = false;
+    for (int i = 0; i < filteredRowCount; ++i) {
+        if (filteredModel->record(i).value("current_last_name").toString() == "Gowin") {
+            foundMatch = true;
+            break;
+        }
+    }
+    QVERIFY2(foundMatch, "Filtered results should contain the searched name.");
+}

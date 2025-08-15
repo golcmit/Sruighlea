@@ -21,3 +21,9 @@ The application will feature a clean, modern, and polished design using Qt's cap
 The initial goal is to build a prototype that can successfully:
 1. Connect to the `FanacalCharacters.db` database.
 2. Fetch and display the list of characters in the main window.
+
+
+## MD Files
+・[TODO](./TASKS.md)
+・[Diary](./DevLog.md)
+・[ERD](./FanacalCharactersERD)

@@ -23,7 +23,7 @@ QT_WARNING_PUSH
 QT_WARNING_DISABLE_DEPRECATED
 struct qt_meta_stringdata_TestCharacterService_t {
     QByteArrayData data[7];
-    char stringdata0[210];
+    char stringdata0[295];
 };
 #define QT_MOC_LITERAL(idx, ofs, len) \
     Q_STATIC_BYTE_ARRAY_DATA_HEADER_INITIALIZER_WITH_OFFSET(len, \
@@ -33,19 +33,20 @@ struct qt_meta_stringdata_TestCharacterService_t {
 static const qt_meta_stringdata_TestCharacterService_t qt_meta_stringdata_TestCharacterService = {
     {
 QT_MOC_LITERAL(0, 0, 20), // "TestCharacterService"
-QT_MOC_LITERAL(1, 21, 12), // "initTestCase"
-QT_MOC_LITERAL(2, 34, 0), // ""
-QT_MOC_LITERAL(3, 35, 15), // "cleanupTestCase"
-QT_MOC_LITERAL(4, 51, 45), // "testFetchCharacterDetails_Val..."
-QT_MOC_LITERAL(5, 97, 48), // "testFetchCharacterDetails_Inv..."
-QT_MOC_LITERAL(6, 146, 63) // "testFetchCharacterDetails_Def..."
+QT_MOC_LITERAL(1, 21, 45), // "testFetchCharacterDetails_Val..."
+QT_MOC_LITERAL(2, 67, 0), // ""
+QT_MOC_LITERAL(3, 68, 48), // "testFetchCharacterDetails_Inv..."
+QT_MOC_LITERAL(4, 117, 63), // "testFetchCharacterDetails_Def..."
+QT_MOC_LITERAL(5, 181, 60), // "testSearchCharactersByName_Ex..."
+QT_MOC_LITERAL(6, 242, 52) // "testAddCharacter_ValidData_Re..."
 
     },
-    "TestCharacterService\0initTestCase\0\0"
-    "cleanupTestCase\0"
+    "TestCharacterService\0"
     "testFetchCharacterDetails_ValidId_ReturnsData\0"
-    "testFetchCharacterDetails_InvalidId_ReturnsEmpty\0"
-    "testFetchCharacterDetails_DefaultConnection_ValidId_ReturnsData"
+    "\0testFetchCharacterDetails_InvalidId_ReturnsEmpty\0"
+    "testFetchCharacterDetails_DefaultConnection_ValidId_ReturnsData\0"
+    "testSearchCharactersByName_ExistingName_ReturnsMatchingModel\0"
+    "testAddCharacter_ValidData_ReturnsSuccessAndAddsToDb"
 };
 #undef QT_MOC_LITERAL
 
@@ -85,11 +86,11 @@ void TestCharacterService::qt_static_metacall(QObject *_o, QMetaObject::Call _c,
         auto *_t = static_cast<TestCharacterService *>(_o);
         (void)_t;
         switch (_id) {
-        case 0: _t->initTestCase(); break;
-        case 1: _t->cleanupTestCase(); break;
-        case 2: _t->testFetchCharacterDetails_ValidId_ReturnsData(); break;
-        case 3: _t->testFetchCharacterDetails_InvalidId_ReturnsEmpty(); break;
-        case 4: _t->testFetchCharacterDetails_DefaultConnection_ValidId_ReturnsData(); break;
+        case 0: _t->testFetchCharacterDetails_ValidId_ReturnsData(); break;
+        case 1: _t->testFetchCharacterDetails_InvalidId_ReturnsEmpty(); break;
+        case 2: _t->testFetchCharacterDetails_DefaultConnection_ValidId_ReturnsData(); break;
+        case 3: _t->testSearchCharactersByName_ExistingName_ReturnsMatchingModel(); break;
+        case 4: _t->testAddCharacter_ValidData_ReturnsSuccessAndAddsToDb(); break;
         default: ;
         }
     }

@@ -4,6 +4,8 @@
 #include <QDate>
 #include <QObject>
 
+class QSqlQueryModel;
+
 // A simple struct to hold character details
 struct CharacterData {
     int id = -1;
@@ -24,4 +26,7 @@ public:
     explicit CharacterService(QObject *parent = nullptr);
 
     CharacterData getCharacterDetails(int characterId);
+    QSqlQueryModel* getCharacterListModel();
+    QSqlQueryModel* searchCharactersByName(const QString& name);
+    bool addCharacter(const CharacterData& character);
 };
