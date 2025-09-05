@@ -15,6 +15,7 @@ private slots:
     void testSearchFunctionality_WhenTextEntered_FiltersList();
     void testAddCharacterButton_ButtonExists();
     void testEditCharacterButton_ButtonExists();
+    void testEditButton_InitiallyDisabled();
 
 private:
     MainWindow *mainWindow;

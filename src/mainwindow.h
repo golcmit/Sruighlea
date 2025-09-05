@@ -6,6 +6,7 @@ class QSqlQueryModel;
 class CharacterService;
 class QLineEdit;
 class QPushButton;
+class QSplitter;
 
 class MainWindow : public QMainWindow
 {
@@ -23,6 +24,8 @@ private slots:
 
 private:
     void setupUI();
+    void setupCharacterListView(QSplitter *splitter);
+    void setupCharacterDetailView(QSplitter *splitter);
     void loadCharacterList();
     void updateCharacterViewModel(QSqlQueryModel *newModel);
 

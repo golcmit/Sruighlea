@@ -79,3 +79,13 @@ void TestMainWindow::testEditCharacterButton_ButtonExists()
     // ASSERT
     QVERIFY2(editButton, "Could not find a QPushButton named 'editCharacterButton'");
 }
+
+void TestMainWindow::testEditButton_InitiallyDisabled()
+{
+    // ARRANGE
+    QPushButton *editButton = mainWindow->findChild<QPushButton*>("editCharacterButton");
+    QVERIFY2(editButton, "Could not find a QPushButton named 'editCharacterButton'");
+
+    // ASSERT
+    QVERIFY2(!editButton->isEnabled(), "The edit button should be disabled initially.");
+}

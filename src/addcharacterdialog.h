@@ -13,11 +13,14 @@ class AddCharacterDialog : public QDialog
     Q_OBJECT
 
 public:
-    explicit AddCharacterDialog(QWidget *parent = nullptr);
+    explicit AddCharacterDialog(QWidget *parent = nullptr); // For adding
+    explicit AddCharacterDialog(const CharacterData &editData, QWidget *parent = nullptr); // For editing
+
     CharacterData getCharacterData() const;
 
 private:
     void setupUI();
+    void populateFields(const CharacterData &data);
 
     QLineEdit *firstNameEdit;
     QLineEdit *lastNameEdit;
@@ -27,4 +30,6 @@ private:
 
     QPushButton *saveButton;
     QPushButton *cancelButton;
+
+    int editingCharacterId = -1;
 };

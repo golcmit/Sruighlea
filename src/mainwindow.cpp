@@ -48,7 +48,26 @@ void MainWindow::setupUI()
     mainLayout->addWidget(addCharacterButton);
 
     QSplitter *splitter = new QSplitter(Qt::Horizontal, this);
+    mainLayout->addWidget(splitter);
 
+    setupCharacterListView(splitter);
+    setupCharacterDetailView(splitter);
+
+    splitter->setStretchFactor(0, 1);
+    splitter->setStretchFactor(1, 1);
+
+    connect(characterTableView, &QTableView::clicked,
+            this, &MainWindow::on_characterTableView_clicked);
+    connect(searchLineEdit, &QLineEdit::textChanged,
+            this, &MainWindow::on_searchTextChanged);
+    connect(addCharacterButton, &QPushButton::clicked,
+            this, &MainWindow::on_addCharacterButton_clicked);
+    connect(editCharacterButton, &QPushButton::clicked,
+            this, &MainWindow::on_editCharacterButton_clicked);
+}
+
+void MainWindow::setupCharacterListView(QSplitter *splitter)
+{
     characterTableView = new QTableView(this);
     characterListModel = new QSqlQueryModel(this);
     characterTableView->setModel(characterListModel);
@@ -56,8 +75,10 @@ void MainWindow::setupUI()
     characterTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
     characterTableView->setSelectionMode(QAbstractItemView::SingleSelection);
     splitter->addWidget(characterTableView);
+}
 
-    // Create the detail view container
+void MainWindow::setupCharacterDetailView(QSplitter *splitter)
+{
     characterDetailsView = new QWidget(this);
     QVBoxLayout *detailLayout = new QVBoxLayout(characterDetailsView);
     detailLayout->setContentsMargins(0, 0, 0, 0);
@@ -68,23 +89,10 @@ void MainWindow::setupUI()
 
     editCharacterButton = new QPushButton("Edit Character", this);
     editCharacterButton->setObjectName("editCharacterButton");
+    editCharacterButton->setEnabled(false);
     detailLayout->addWidget(editCharacterButton);
 
     splitter->addWidget(characterDetailsView);
-
-    splitter->setStretchFactor(0, 1);
-    splitter->setStretchFactor(1, 1);
-
-    mainLayout->addWidget(splitter);
-
-    connect(characterTableView->selectionModel(), &QItemSelectionModel::currentRowChanged,
-            this, &MainWindow::on_characterTableView_clicked);
-    connect(searchLineEdit, &QLineEdit::textChanged,
-            this, &MainWindow::on_searchTextChanged);
-    connect(addCharacterButton, &QPushButton::clicked,
-            this, &MainWindow::on_addCharacterButton_clicked);
-    connect(editCharacterButton, &QPushButton::clicked,
-            this, &MainWindow::on_editCharacterButton_clicked);
 }
 
 void MainWindow::loadCharacterList()
@@ -97,8 +105,11 @@ void MainWindow::on_characterTableView_clicked(const QModelIndex &index)
 {
     if (!index.isValid()) {
         characterDetailsTextEdit->clear();
+        editCharacterButton->setEnabled(false);
         return;
     }
+
+    editCharacterButton->setEnabled(true);
 
     int characterId = characterListModel->data(characterListModel->index(index.row(), 0)).toInt();
     CharacterData details = characterService->getCharacterDetails(characterId);
@@ -144,7 +155,32 @@ void MainWindow::on_addCharacterButton_clicked()
 
 void MainWindow::on_editCharacterButton_clicked()
 {
-    // TODO: Implement character editing logic
+    // Get selected character's ID
+    QModelIndexList selection = characterTableView->selectionModel()->selectedRows();
+    if (selection.isEmpty()) {
+        // This case should ideally not be reachable if the button is disabled correctly
+        return;
+    }
+    QModelIndex idIndex = characterListModel->index(selection.first().row(), 0);
+    int characterId = characterListModel->data(idIndex).toInt();
+
+    // Fetch full data
+    CharacterData currentData = characterService->getCharacterDetails(characterId);
+    if (!currentData.isValid()) {
+        QMessageBox::critical(this, "Error", "Could not fetch character details.");
+        return;
+    }
+
+    // Open dialog with data
+    AddCharacterDialog dialog(currentData, this);
+    if (dialog.exec() == QDialog::Accepted) {
+        CharacterData updatedData = dialog.getCharacterData();
+        if (characterService->updateCharacter(updatedData)) {
+            loadCharacterList(); // Refresh list
+        } else {
+            QMessageBox::critical(this, "Error", "Failed to update character.");
+        }
+    }
 }
 
 void MainWindow::updateCharacterViewModel(QSqlQueryModel *newModel)

@@ -14,6 +14,14 @@ AddCharacterDialog::AddCharacterDialog(QWidget *parent)
     setupUI();
 }
 
+AddCharacterDialog::AddCharacterDialog(const CharacterData &editData, QWidget *parent)
+    : QDialog(parent)
+{
+    setWindowTitle("Edit Character");
+    setupUI();
+    populateFields(editData);
+}
+
 void AddCharacterDialog::setupUI()
 {
     QFormLayout *formLayout = new QFormLayout();
@@ -48,9 +56,20 @@ void AddCharacterDialog::setupUI()
     mainLayout->addWidget(buttonBox);
 }
 
+void AddCharacterDialog::populateFields(const CharacterData &data)
+{
+    editingCharacterId = data.id;
+    firstNameEdit->setText(data.firstName);
+    lastNameEdit->setText(data.lastName);
+    houseComboBox->setCurrentText(data.house);
+    bloodStatusComboBox->setCurrentText(data.bloodStatus);
+    birthDateEdit->setDate(data.birthDate);
+}
+
 CharacterData AddCharacterDialog::getCharacterData() const
 {
     CharacterData data;
+    data.id = editingCharacterId; // Pass the ID back
     data.firstName = firstNameEdit->text();
     data.lastName = lastNameEdit->text();
     data.house = houseComboBox->currentText();
