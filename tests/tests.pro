@@ -5,11 +5,12 @@ TARGET = test_runner
 CONFIG += console qtest
 CONFIG -= app_bundle
 
-# Add the parent directory to the include path to find the main project's headers
-INCLUDEPATH += ..
+# Add the parent directory to the include path and source path
+VPATH = ../src
+INCLUDEPATH += ../src
 
 # Source files from the main project that are needed for the tests
-SOURCES += ../src/CharacterService.cpp ../src/mainwindow.cpp ../src/DatabaseManager.cpp
+SOURCES += CharacterService.cpp mainwindow.cpp DatabaseManager.cpp addcharacterdialog.cpp
 
 # Test source files
 SOURCES += \
@@ -20,8 +21,8 @@ SOURCES += \
 # Test header files
 HEADERS += \
     test_characterservice.h \
-    ../src/CharacterService.h \
-    ../src/mainwindow.h \
+    CharacterService.h \
+    mainwindow.h \
     test_mainwindow.h \
-    ../src/DatabaseManager.h
-
+    DatabaseManager.h \
+    addcharacterdialog.h

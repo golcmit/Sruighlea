@@ -1,5 +1,6 @@
 #include "mainwindow.h"
 #include "CharacterService.h"
+#include "addcharacterdialog.h"
 #include <QHeaderView>
 #include <QSqlError>
 #include <QMessageBox>
@@ -7,6 +8,7 @@
 #include <QVBoxLayout>
 #include <QWidget>
 #include <QLineEdit>
+#include <QPushButton>
 #include <QTableView>
 #include <QTextEdit>
 #include <QSqlQueryModel>
@@ -41,6 +43,10 @@ void MainWindow::setupUI()
     searchLineEdit->setPlaceholderText("Search by name...");
     mainLayout->addWidget(searchLineEdit);
 
+    addCharacterButton = new QPushButton("Add New Character", this);
+    addCharacterButton->setObjectName("addCharacterButton");
+    mainLayout->addWidget(addCharacterButton);
+
     QSplitter *splitter = new QSplitter(Qt::Horizontal, this);
 
     characterTableView = new QTableView(this);
@@ -51,9 +57,20 @@ void MainWindow::setupUI()
     characterTableView->setSelectionMode(QAbstractItemView::SingleSelection);
     splitter->addWidget(characterTableView);
 
+    // Create the detail view container
+    characterDetailsView = new QWidget(this);
+    QVBoxLayout *detailLayout = new QVBoxLayout(characterDetailsView);
+    detailLayout->setContentsMargins(0, 0, 0, 0);
+
     characterDetailsTextEdit = new QTextEdit(this);
     characterDetailsTextEdit->setReadOnly(true);
-    splitter->addWidget(characterDetailsTextEdit);
+    detailLayout->addWidget(characterDetailsTextEdit);
+
+    editCharacterButton = new QPushButton("Edit Character", this);
+    editCharacterButton->setObjectName("editCharacterButton");
+    detailLayout->addWidget(editCharacterButton);
+
+    splitter->addWidget(characterDetailsView);
 
     splitter->setStretchFactor(0, 1);
     splitter->setStretchFactor(1, 1);
@@ -64,6 +81,10 @@ void MainWindow::setupUI()
             this, &MainWindow::on_characterTableView_clicked);
     connect(searchLineEdit, &QLineEdit::textChanged,
             this, &MainWindow::on_searchTextChanged);
+    connect(addCharacterButton, &QPushButton::clicked,
+            this, &MainWindow::on_addCharacterButton_clicked);
+    connect(editCharacterButton, &QPushButton::clicked,
+            this, &MainWindow::on_editCharacterButton_clicked);
 }
 
 void MainWindow::loadCharacterList()
@@ -106,6 +127,24 @@ void MainWindow::on_searchTextChanged(const QString &text)
 
     QSqlQueryModel* newModel = characterService->searchCharactersByName(text);
     updateCharacterViewModel(newModel);
+}
+
+void MainWindow::on_addCharacterButton_clicked()
+{
+    AddCharacterDialog dialog(this);
+    if (dialog.exec() == QDialog::Accepted) {
+        CharacterData newChar = dialog.getCharacterData();
+        if (characterService->addCharacter(newChar)) {
+            loadCharacterList(); // Refresh the list
+        } else {
+            QMessageBox::warning(this, "Error", "Failed to add character to the database.");
+        }
+    }
+}
+
+void MainWindow::on_editCharacterButton_clicked()
+{
+    // TODO: Implement character editing logic
 }
 
 void MainWindow::updateCharacterViewModel(QSqlQueryModel *newModel)

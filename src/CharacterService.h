@@ -29,4 +29,5 @@ public:
     QSqlQueryModel* getCharacterListModel();
     QSqlQueryModel* searchCharactersByName(const QString& name);
     bool addCharacter(const CharacterData& character);
+    bool updateCharacter(const CharacterData& character);
 };

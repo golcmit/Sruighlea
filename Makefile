@@ -54,13 +54,19 @@ OBJECTS_DIR   = ./
 
 SOURCES       = main.cpp \
 		src/CharacterService.cpp \
-		src/mainwindow.cpp moc_CharacterService.cpp \
-		moc_mainwindow.cpp
+		src/mainwindow.cpp \
+		src/DatabaseManager.cpp \
+		src/addcharacterdialog.cpp moc_CharacterService.cpp \
+		moc_mainwindow.cpp \
+		moc_addcharacterdialog.cpp
 OBJECTS       = main.o \
 		CharacterService.o \
 		mainwindow.o \
+		DatabaseManager.o \
+		addcharacterdialog.o \
 		moc_CharacterService.o \
-		moc_mainwindow.o
+		moc_mainwindow.o \
+		moc_addcharacterdialog.o
 DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/unix.conf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/linux.conf \
@@ -139,9 +145,13 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/yacc.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/lex.prf \
 		Sruighlea.pro src/CharacterService.h \
-		src/mainwindow.h main.cpp \
+		src/mainwindow.h \
+		src/DatabaseManager.h \
+		src/addcharacterdialog.h main.cpp \
 		src/CharacterService.cpp \
-		src/mainwindow.cpp
+		src/mainwindow.cpp \
+		src/DatabaseManager.cpp \
+		src/addcharacterdialog.cpp
 QMAKE_TARGET  = Sruighlea
 DESTDIR       = 
 TARGET        = Sruighlea
@@ -325,8 +335,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents src/CharacterService.h src/mainwindow.h $(DISTDIR)/
-	$(COPY_FILE) --parents main.cpp src/CharacterService.cpp src/mainwindow.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents src/CharacterService.h src/mainwindow.h src/DatabaseManager.h src/addcharacterdialog.h $(DISTDIR)/
+	$(COPY_FILE) --parents main.cpp src/CharacterService.cpp src/mainwindow.cpp src/DatabaseManager.cpp src/addcharacterdialog.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -358,19 +368,24 @@ compiler_moc_predefs_clean:
 moc_predefs.h: /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp
 	g++ -pipe -O2 -Wall -Wextra -dM -E -o moc_predefs.h /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp
 
-compiler_moc_header_make_all: moc_CharacterService.cpp moc_mainwindow.cpp
+compiler_moc_header_make_all: moc_CharacterService.cpp moc_mainwindow.cpp moc_addcharacterdialog.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) moc_CharacterService.cpp moc_mainwindow.cpp
+	-$(DEL_FILE) moc_CharacterService.cpp moc_mainwindow.cpp moc_addcharacterdialog.cpp
 moc_CharacterService.cpp: src/CharacterService.h \
 		moc_predefs.h \
 		/usr/lib/qt5/bin/moc
 	/usr/lib/qt5/bin/moc $(DEFINES) --include /mnt/c/Users/uhei2/novels/HogWarts/Database/Sruighlea/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/mnt/c/Users/uhei2/novels/HogWarts/Database/Sruighlea -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtSql -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/11 -I/usr/include/x86_64-linux-gnu/c++/11 -I/usr/include/c++/11/backward -I/usr/lib/gcc/x86_64-linux-gnu/11/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/CharacterService.h -o moc_CharacterService.cpp
 
 moc_mainwindow.cpp: src/mainwindow.h \
-		src/CharacterService.h \
 		moc_predefs.h \
 		/usr/lib/qt5/bin/moc
 	/usr/lib/qt5/bin/moc $(DEFINES) --include /mnt/c/Users/uhei2/novels/HogWarts/Database/Sruighlea/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/mnt/c/Users/uhei2/novels/HogWarts/Database/Sruighlea -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtSql -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/11 -I/usr/include/x86_64-linux-gnu/c++/11 -I/usr/include/c++/11/backward -I/usr/lib/gcc/x86_64-linux-gnu/11/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/mainwindow.h -o moc_mainwindow.cpp
+
+moc_addcharacterdialog.cpp: src/addcharacterdialog.h \
+		src/CharacterService.h \
+		moc_predefs.h \
+		/usr/lib/qt5/bin/moc
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /mnt/c/Users/uhei2/novels/HogWarts/Database/Sruighlea/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/mnt/c/Users/uhei2/novels/HogWarts/Database/Sruighlea -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtSql -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/11 -I/usr/include/x86_64-linux-gnu/c++/11 -I/usr/include/c++/11/backward -I/usr/lib/gcc/x86_64-linux-gnu/11/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/addcharacterdialog.h -o moc_addcharacterdialog.cpp
 
 compiler_moc_objc_header_make_all:
 compiler_moc_objc_header_clean:
@@ -389,21 +404,32 @@ compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean
 ####### Compile
 
 main.o: main.cpp src/mainwindow.h \
-		src/CharacterService.h
+		src/DatabaseManager.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o main.cpp
 
 CharacterService.o: src/CharacterService.cpp src/CharacterService.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o CharacterService.o src/CharacterService.cpp
 
 mainwindow.o: src/mainwindow.cpp src/mainwindow.h \
-		src/CharacterService.h
+		src/CharacterService.h \
+		src/addcharacterdialog.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o src/mainwindow.cpp
+
+DatabaseManager.o: src/DatabaseManager.cpp src/DatabaseManager.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o DatabaseManager.o src/DatabaseManager.cpp
+
+addcharacterdialog.o: src/addcharacterdialog.cpp src/addcharacterdialog.h \
+		src/CharacterService.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o addcharacterdialog.o src/addcharacterdialog.cpp
 
 moc_CharacterService.o: moc_CharacterService.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_CharacterService.o moc_CharacterService.cpp
 
 moc_mainwindow.o: moc_mainwindow.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_mainwindow.o moc_mainwindow.cpp
+
+moc_addcharacterdialog.o: moc_addcharacterdialog.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_addcharacterdialog.o moc_addcharacterdialog.cpp
 
 ####### Install
 

@@ -17,7 +17,7 @@ CXX           = g++
 DEFINES       = -DQT_NO_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_SQL_LIB -DQT_TESTLIB_LIB -DQT_CORE_LIB -DQT_TESTCASE_BUILDDIR='"/mnt/c/Users/uhei2/novels/HogWarts/Database/Sruighlea/tests"'
 CFLAGS        = -pipe -O2 -Wall -Wextra -D_REENTRANT -fPIC $(DEFINES)
 CXXFLAGS      = -pipe -O2 -Wall -Wextra -D_REENTRANT -fPIC $(DEFINES)
-INCPATH       = -I. -I.. -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtSql -I/usr/include/x86_64-linux-gnu/qt5/QtTest -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++
+INCPATH       = -I. -I../src -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtSql -I/usr/include/x86_64-linux-gnu/qt5/QtTest -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++
 QMAKE         = /usr/lib/qt5/bin/qmake
 DEL_FILE      = rm -f
 CHK_DIR_EXISTS= test -d
@@ -55,22 +55,26 @@ OBJECTS_DIR   = ./
 SOURCES       = ../src/CharacterService.cpp \
 		../src/mainwindow.cpp \
 		../src/DatabaseManager.cpp \
+		../src/addcharacterdialog.cpp \
 		test_main.cpp \
 		test_characterservice.cpp \
 		test_mainwindow.cpp moc_test_characterservice.cpp \
 		moc_CharacterService.cpp \
 		moc_mainwindow.cpp \
-		moc_test_mainwindow.cpp
+		moc_test_mainwindow.cpp \
+		moc_addcharacterdialog.cpp
 OBJECTS       = CharacterService.o \
 		mainwindow.o \
 		DatabaseManager.o \
+		addcharacterdialog.o \
 		test_main.o \
 		test_characterservice.o \
 		test_mainwindow.o \
 		moc_test_characterservice.o \
 		moc_CharacterService.o \
 		moc_mainwindow.o \
-		moc_test_mainwindow.o
+		moc_test_mainwindow.o \
+		moc_addcharacterdialog.o
 DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/unix.conf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/linux.conf \
@@ -153,9 +157,11 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		../src/CharacterService.h \
 		../src/mainwindow.h \
 		test_mainwindow.h \
-		../src/DatabaseManager.h ../src/CharacterService.cpp \
+		../src/DatabaseManager.h \
+		../src/addcharacterdialog.h ../src/CharacterService.cpp \
 		../src/mainwindow.cpp \
 		../src/DatabaseManager.cpp \
+		../src/addcharacterdialog.cpp \
 		test_main.cpp \
 		test_characterservice.cpp \
 		test_mainwindow.cpp
@@ -344,8 +350,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents test_characterservice.h ../src/CharacterService.h ../src/mainwindow.h test_mainwindow.h ../src/DatabaseManager.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../src/CharacterService.cpp ../src/mainwindow.cpp ../src/DatabaseManager.cpp test_main.cpp test_characterservice.cpp test_mainwindow.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents test_characterservice.h ../src/CharacterService.h ../src/mainwindow.h test_mainwindow.h ../src/DatabaseManager.h ../src/addcharacterdialog.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../src/CharacterService.cpp ../src/mainwindow.cpp ../src/DatabaseManager.cpp ../src/addcharacterdialog.cpp test_main.cpp test_characterservice.cpp test_mainwindow.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -376,28 +382,34 @@ compiler_moc_predefs_clean:
 moc_predefs.h: /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp
 	g++ -pipe -O2 -Wall -Wextra -dM -E -o moc_predefs.h /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp
 
-compiler_moc_header_make_all: moc_test_characterservice.cpp moc_CharacterService.cpp moc_mainwindow.cpp moc_test_mainwindow.cpp
+compiler_moc_header_make_all: moc_test_characterservice.cpp moc_CharacterService.cpp moc_mainwindow.cpp moc_test_mainwindow.cpp moc_addcharacterdialog.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) moc_test_characterservice.cpp moc_CharacterService.cpp moc_mainwindow.cpp moc_test_mainwindow.cpp
+	-$(DEL_FILE) moc_test_characterservice.cpp moc_CharacterService.cpp moc_mainwindow.cpp moc_test_mainwindow.cpp moc_addcharacterdialog.cpp
 moc_test_characterservice.cpp: test_characterservice.h \
 		moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /mnt/c/Users/uhei2/novels/HogWarts/Database/Sruighlea/tests/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/mnt/c/Users/uhei2/novels/HogWarts/Database/Sruighlea/tests -I/mnt/c/Users/uhei2/novels/HogWarts/Database/Sruighlea -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtSql -I/usr/include/x86_64-linux-gnu/qt5/QtTest -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/11 -I/usr/include/x86_64-linux-gnu/c++/11 -I/usr/include/c++/11/backward -I/usr/lib/gcc/x86_64-linux-gnu/11/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include test_characterservice.h -o moc_test_characterservice.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /mnt/c/Users/uhei2/novels/HogWarts/Database/Sruighlea/tests/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/mnt/c/Users/uhei2/novels/HogWarts/Database/Sruighlea/tests -I/mnt/c/Users/uhei2/novels/HogWarts/Database/Sruighlea/src -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtSql -I/usr/include/x86_64-linux-gnu/qt5/QtTest -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/11 -I/usr/include/x86_64-linux-gnu/c++/11 -I/usr/include/c++/11/backward -I/usr/lib/gcc/x86_64-linux-gnu/11/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include test_characterservice.h -o moc_test_characterservice.cpp
 
 moc_CharacterService.cpp: ../src/CharacterService.h \
 		moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /mnt/c/Users/uhei2/novels/HogWarts/Database/Sruighlea/tests/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/mnt/c/Users/uhei2/novels/HogWarts/Database/Sruighlea/tests -I/mnt/c/Users/uhei2/novels/HogWarts/Database/Sruighlea -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtSql -I/usr/include/x86_64-linux-gnu/qt5/QtTest -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/11 -I/usr/include/x86_64-linux-gnu/c++/11 -I/usr/include/c++/11/backward -I/usr/lib/gcc/x86_64-linux-gnu/11/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../src/CharacterService.h -o moc_CharacterService.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /mnt/c/Users/uhei2/novels/HogWarts/Database/Sruighlea/tests/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/mnt/c/Users/uhei2/novels/HogWarts/Database/Sruighlea/tests -I/mnt/c/Users/uhei2/novels/HogWarts/Database/Sruighlea/src -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtSql -I/usr/include/x86_64-linux-gnu/qt5/QtTest -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/11 -I/usr/include/x86_64-linux-gnu/c++/11 -I/usr/include/c++/11/backward -I/usr/lib/gcc/x86_64-linux-gnu/11/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../src/CharacterService.h -o moc_CharacterService.cpp
 
 moc_mainwindow.cpp: ../src/mainwindow.h \
 		moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /mnt/c/Users/uhei2/novels/HogWarts/Database/Sruighlea/tests/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/mnt/c/Users/uhei2/novels/HogWarts/Database/Sruighlea/tests -I/mnt/c/Users/uhei2/novels/HogWarts/Database/Sruighlea -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtSql -I/usr/include/x86_64-linux-gnu/qt5/QtTest -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/11 -I/usr/include/x86_64-linux-gnu/c++/11 -I/usr/include/c++/11/backward -I/usr/lib/gcc/x86_64-linux-gnu/11/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../src/mainwindow.h -o moc_mainwindow.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /mnt/c/Users/uhei2/novels/HogWarts/Database/Sruighlea/tests/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/mnt/c/Users/uhei2/novels/HogWarts/Database/Sruighlea/tests -I/mnt/c/Users/uhei2/novels/HogWarts/Database/Sruighlea/src -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtSql -I/usr/include/x86_64-linux-gnu/qt5/QtTest -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/11 -I/usr/include/x86_64-linux-gnu/c++/11 -I/usr/include/c++/11/backward -I/usr/lib/gcc/x86_64-linux-gnu/11/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../src/mainwindow.h -o moc_mainwindow.cpp
 
 moc_test_mainwindow.cpp: test_mainwindow.h \
 		moc_predefs.h \
 		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /mnt/c/Users/uhei2/novels/HogWarts/Database/Sruighlea/tests/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/mnt/c/Users/uhei2/novels/HogWarts/Database/Sruighlea/tests -I/mnt/c/Users/uhei2/novels/HogWarts/Database/Sruighlea -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtSql -I/usr/include/x86_64-linux-gnu/qt5/QtTest -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/11 -I/usr/include/x86_64-linux-gnu/c++/11 -I/usr/include/c++/11/backward -I/usr/lib/gcc/x86_64-linux-gnu/11/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include test_mainwindow.h -o moc_test_mainwindow.cpp
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /mnt/c/Users/uhei2/novels/HogWarts/Database/Sruighlea/tests/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/mnt/c/Users/uhei2/novels/HogWarts/Database/Sruighlea/tests -I/mnt/c/Users/uhei2/novels/HogWarts/Database/Sruighlea/src -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtSql -I/usr/include/x86_64-linux-gnu/qt5/QtTest -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/11 -I/usr/include/x86_64-linux-gnu/c++/11 -I/usr/include/c++/11/backward -I/usr/lib/gcc/x86_64-linux-gnu/11/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include test_mainwindow.h -o moc_test_mainwindow.cpp
+
+moc_addcharacterdialog.cpp: ../src/addcharacterdialog.h \
+		../src/CharacterService.h \
+		moc_predefs.h \
+		/usr/lib/qt5/bin/moc
+	/usr/lib/qt5/bin/moc $(DEFINES) --include /mnt/c/Users/uhei2/novels/HogWarts/Database/Sruighlea/tests/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/mnt/c/Users/uhei2/novels/HogWarts/Database/Sruighlea/tests -I/mnt/c/Users/uhei2/novels/HogWarts/Database/Sruighlea/src -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtSql -I/usr/include/x86_64-linux-gnu/qt5/QtTest -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/11 -I/usr/include/x86_64-linux-gnu/c++/11 -I/usr/include/c++/11/backward -I/usr/lib/gcc/x86_64-linux-gnu/11/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include ../src/addcharacterdialog.h -o moc_addcharacterdialog.cpp
 
 compiler_moc_objc_header_make_all:
 compiler_moc_objc_header_clean:
@@ -419,14 +431,20 @@ CharacterService.o: ../src/CharacterService.cpp ../src/CharacterService.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o CharacterService.o ../src/CharacterService.cpp
 
 mainwindow.o: ../src/mainwindow.cpp ../src/mainwindow.h \
-		../src/CharacterService.h
+		../src/CharacterService.h \
+		../src/addcharacterdialog.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o ../src/mainwindow.cpp
 
 DatabaseManager.o: ../src/DatabaseManager.cpp ../src/DatabaseManager.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o DatabaseManager.o ../src/DatabaseManager.cpp
 
+addcharacterdialog.o: ../src/addcharacterdialog.cpp ../src/addcharacterdialog.h \
+		../src/CharacterService.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o addcharacterdialog.o ../src/addcharacterdialog.cpp
+
 test_main.o: test_main.cpp test_characterservice.h \
-		test_mainwindow.h
+		test_mainwindow.h \
+		../src/DatabaseManager.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o test_main.o test_main.cpp
 
 test_characterservice.o: test_characterservice.cpp test_characterservice.h \
@@ -450,6 +468,9 @@ moc_mainwindow.o: moc_mainwindow.cpp
 
 moc_test_mainwindow.o: moc_test_mainwindow.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_test_mainwindow.o moc_test_mainwindow.cpp
+
+moc_addcharacterdialog.o: moc_addcharacterdialog.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_addcharacterdialog.o moc_addcharacterdialog.cpp
 
 ####### Install
 

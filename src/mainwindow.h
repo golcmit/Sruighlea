@@ -5,6 +5,7 @@ class QTextEdit;
 class QSqlQueryModel;
 class CharacterService;
 class QLineEdit;
+class QPushButton;
 
 class MainWindow : public QMainWindow
 {
@@ -17,6 +18,8 @@ public:
 private slots:
     void on_characterTableView_clicked(const QModelIndex &index);
     void on_searchTextChanged(const QString &text);
+    void on_addCharacterButton_clicked();
+    void on_editCharacterButton_clicked();
 
 private:
     void setupUI();
@@ -24,8 +27,11 @@ private:
     void updateCharacterViewModel(QSqlQueryModel *newModel);
 
     QTableView *characterTableView;
+    QWidget *characterDetailsView; // Container for text edit and button
     QTextEdit *characterDetailsTextEdit;
+    QPushButton *editCharacterButton;
     QSqlQueryModel *characterListModel;
     CharacterService *characterService;
     QLineEdit *searchLineEdit;
+    QPushButton *addCharacterButton;
 };

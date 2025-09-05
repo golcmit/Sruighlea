@@ -29,15 +29,15 @@ This ensures that all code is covered by tests, improving robustness and maintai
 - [x] Implement real-time filtering of the character list based on text input (search by first name or last name).
 
 ### Feature: Add New Character
-- [ ] Add an "Add New Character" button.
-- [ ] Create a form/dialog to input all necessary information for a new character.
-- [ ] Implement data validation for the input fields.
-- [ ] Save the new character to the database.
+- [x] Add an "Add New Character" button.
+- [x] Create a form/dialog to input all necessary information for a new character.
+- [x] Implement data validation for the input fields.
+- [x] Save the new character to the database.
 
 ### Feature: Edit Character
-- [ ] Add an "Edit" button to the detail view.
+- [x] Add an "Edit" button to the detail view.
 - [ ] Allow users to modify the information of an existing character.
-- [ ] Update the character's information in the database.
+- [x] Update the character's information in the database.
 
 ## UI/UX Improvements
 

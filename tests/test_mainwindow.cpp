@@ -6,6 +6,7 @@
 #include <QTableView>
 #include <QSqlQueryModel>
 #include <QSqlRecord>
+#include <QPushButton>
 
 void TestMainWindow::initTestCase()
 {
@@ -59,4 +60,22 @@ void TestMainWindow::testSearchFunctionality_WhenTextEntered_FiltersList()
         }
     }
     QVERIFY2(foundMatch, "Filtered results should contain the searched name.");
+}
+
+void TestMainWindow::testAddCharacterButton_ButtonExists()
+{
+    // ARRANGE
+    QPushButton *addButton = mainWindow->findChild<QPushButton*>("addCharacterButton");
+
+    // ASSERT
+    QVERIFY2(addButton, "Could not find a QPushButton named 'addCharacterButton'");
+}
+
+void TestMainWindow::testEditCharacterButton_ButtonExists()
+{
+    // ARRANGE
+    QPushButton *editButton = mainWindow->findChild<QPushButton*>("editCharacterButton");
+
+    // ASSERT
+    QVERIFY2(editButton, "Could not find a QPushButton named 'editCharacterButton'");
 }

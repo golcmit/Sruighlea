@@ -13,6 +13,8 @@ private slots:
     void cleanupTestCase();
 
     void testSearchFunctionality_WhenTextEntered_FiltersList();
+    void testAddCharacterButton_ButtonExists();
+    void testEditCharacterButton_ButtonExists();
 
 private:
     MainWindow *mainWindow;

@@ -91,3 +91,44 @@ bool CharacterService::addCharacter(const CharacterData& character)
 
     return true;
 }
+
+bool CharacterService::updateCharacter(const CharacterData& character)
+{
+    // 1. Find house_id from house name
+    QSqlQuery houseQuery;
+    houseQuery.prepare("SELECT id FROM houses WHERE name = :name");
+    houseQuery.bindValue(":name", character.house);
+    if (!houseQuery.exec() || !houseQuery.next()) {
+        qWarning() << "Could not find house_id for house:" << character.house;
+        return false; // House not found
+    }
+    int houseId = houseQuery.value(0).toInt();
+
+    // 2. Prepare UPDATE statement
+    QSqlQuery updateQuery;
+    updateQuery.prepare(
+        "UPDATE characters SET "
+        "first_name = :firstName, "
+        "current_last_name = :lastName, "
+        "birth_date = :birthDate, "
+        "house_id = :houseId, "
+        "blood_status = :bloodStatus "
+        "WHERE id = :id"
+    );
+
+    // 3. Bind values
+    updateQuery.bindValue(":firstName", character.firstName);
+    updateQuery.bindValue(":lastName", character.lastName);
+    updateQuery.bindValue(":birthDate", character.birthDate);
+    updateQuery.bindValue(":houseId", houseId);
+    updateQuery.bindValue(":bloodStatus", character.bloodStatus);
+    updateQuery.bindValue(":id", character.id);
+
+    // 4. Execute
+    if (!updateQuery.exec()) {
+        qWarning() << "Failed to update character:" << updateQuery.lastError().text();
+        return false;
+    }
+
+    return true;
+}

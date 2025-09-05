@@ -12,5 +12,6 @@ private slots:
     void testFetchCharacterDetails_DefaultConnection_ValidId_ReturnsData(); // これを追加
     void testSearchCharactersByName_ExistingName_ReturnsMatchingModel();
     void testAddCharacter_ValidData_ReturnsSuccessAndAddsToDb();
+    void testUpdateCharacter_ValidData_UpdatesInDb();
 
 };

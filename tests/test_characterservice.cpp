@@ -125,3 +125,46 @@ void TestCharacterService::testAddCharacter_ValidData_ReturnsSuccessAndAddsToDb(
     query.exec();
 }
 
+void TestCharacterService::testUpdateCharacter_ValidData_UpdatesInDb()
+{
+    // ARRANGE
+    CharacterService service;
+    // 1. Add a temporary character to ensure a known state
+    CharacterData originalChar;
+    originalChar.firstName = "Test";
+    originalChar.lastName = "User";
+    originalChar.house = "gryffindor";
+    originalChar.bloodStatus = "half";
+    originalChar.birthDate = QDate(2000, 1, 1);
+    service.addCharacter(originalChar);
+
+    // Find the ID of the newly added character
+    QSqlQuery findQuery;
+    findQuery.prepare("SELECT id FROM characters WHERE first_name = 'Test' AND current_last_name = 'User'");
+    QVERIFY(findQuery.exec() && findQuery.next());
+    int charId = findQuery.value(0).toInt();
+
+    // 2. Fetch the character and modify it
+    CharacterData charToUpdate = service.getCharacterDetails(charId);
+    QVERIFY(charToUpdate.isValid());
+    charToUpdate.house = "ravenclaw"; // Change the house
+
+    // ACT
+    bool result = service.updateCharacter(charToUpdate);
+
+    // ASSERT
+    QVERIFY2(result, "updateCharacter should return true for valid data.");
+
+    // 4. Fetch again and verify the change
+    CharacterData updatedChar = service.getCharacterDetails(charId);
+    QVERIFY(updatedChar.isValid());
+    QCOMPARE(updatedChar.house, QString("ravenclaw"));
+    QCOMPARE(updatedChar.firstName, originalChar.firstName); // Ensure other data is unchanged
+
+    // CLEANUP
+    QSqlQuery deleteQuery;
+    deleteQuery.prepare("DELETE FROM characters WHERE id = :id");
+    deleteQuery.bindValue(":id", charId);
+    deleteQuery.exec();
+}
+
