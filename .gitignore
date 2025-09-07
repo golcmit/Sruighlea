@@ -1,0 +1,13 @@
+# Build artifacts
+*.o
+moc_*.cpp
+moc_predefs.h
+Sruighlea
+test_runner
+*.AppImage
+
+# Log files
+*.log
+
+# User-specific files
+.qmake.stash
