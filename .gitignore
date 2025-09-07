@@ -6,6 +6,16 @@ Sruighlea
 test_runner
 *.AppImage
 
+# linuxdeployqt artifacts
+lib/
+plugins/
+doc/
+translations/
+AppRun
+qt.conf
+.DirIcon
+default.png
+
 # Log files
 *.log
 
