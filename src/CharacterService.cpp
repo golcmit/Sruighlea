@@ -1,9 +1,10 @@
 #include "CharacterService.h"
+#include "Logger.h"
+#include "SqlQueries.h"
 #include <QSqlQuery>
 #include <QVariant>
 #include <QSqlQueryModel>
 #include <QSqlError>
-#include <QDebug>
 
 CharacterService::CharacterService(QObject *parent) : QObject(parent)
 {
@@ -15,9 +16,7 @@ CharacterData CharacterService::getCharacterDetails(int characterId)
 {
     CharacterData data;
     QSqlQuery query(QSqlDatabase::database());
-    query.prepare("SELECT c.id, c.first_name, c.current_last_name, c.birth_date, h.name AS house_name, c.blood_status "
-                  "FROM characters c LEFT JOIN houses h ON c.house_id = h.id "
-                  "WHERE c.id = :id");
+    query.prepare(SqlQueries::GET_CHARACTER_DETAILS);
     query.bindValue(":id", characterId);
 
     if (query.exec() && query.next()) {
@@ -35,8 +34,7 @@ CharacterData CharacterService::getCharacterDetails(int characterId)
 QSqlQueryModel* CharacterService::getCharacterListModel()
 {
     QSqlQueryModel* model = new QSqlQueryModel();
-    QString query = "SELECT c.id, c.first_name, c.current_last_name, h.name AS house, c.blood_status FROM characters c LEFT JOIN houses h ON c.house_id = h.id ORDER BY c.id";
-    model->setQuery(query);
+    model->setQuery(SqlQueries::GET_CHARACTER_LIST);
     return model;
 }
 
@@ -45,10 +43,7 @@ QSqlQueryModel* CharacterService::searchCharactersByName(const QString& name)
     QSqlQueryModel* model = new QSqlQueryModel();
     
     QSqlQuery query;
-    query.prepare("SELECT c.id, c.first_name, c.current_last_name, h.name AS house, c.blood_status "
-                  "FROM characters c LEFT JOIN houses h ON c.house_id = h.id "
-                  "WHERE c.first_name LIKE :name OR c.current_last_name LIKE :name "
-                  "ORDER BY c.id");
+    query.prepare(SqlQueries::SEARCH_CHARACTERS_BY_NAME);
     query.bindValue(":name", "%" + name + "%");
     query.exec();
 
@@ -61,20 +56,17 @@ bool CharacterService::addCharacter(const CharacterData& character)
 {
     // 1. Find house_id from house name
     QSqlQuery houseQuery;
-    houseQuery.prepare("SELECT id FROM houses WHERE name = :name");
+    houseQuery.prepare(SqlQueries::GET_HOUSE_ID_BY_NAME);
     houseQuery.bindValue(":name", character.house);
     if (!houseQuery.exec() || !houseQuery.next()) {
-        qWarning() << "Could not find house_id for house:" << character.house;
+        Logger::instance().warning("Could not find house_id for house: " + character.house);
         return false; // House not found
     }
     int houseId = houseQuery.value(0).toInt();
 
     // 2. Prepare INSERT statement
     QSqlQuery insertQuery;
-    insertQuery.prepare(
-        "INSERT INTO characters (first_name, current_last_name, birth_date, house_id, blood_status) "
-        "VALUES (:firstName, :lastName, :birthDate, :houseId, :bloodStatus)"
-    );
+    insertQuery.prepare(SqlQueries::INSERT_CHARACTER);
 
     // 3. Bind values
     insertQuery.bindValue(":firstName", character.firstName);
@@ -85,7 +77,7 @@ bool CharacterService::addCharacter(const CharacterData& character)
 
     // 4. Execute
     if (!insertQuery.exec()) {
-        qWarning() << "Failed to add character:" << insertQuery.lastError().text();
+        Logger::instance().error("Failed to add character: " + insertQuery.lastError().text());
         return false;
     }
 
@@ -96,25 +88,17 @@ bool CharacterService::updateCharacter(const CharacterData& character)
 {
     // 1. Find house_id from house name
     QSqlQuery houseQuery;
-    houseQuery.prepare("SELECT id FROM houses WHERE name = :name");
+    houseQuery.prepare(SqlQueries::GET_HOUSE_ID_BY_NAME);
     houseQuery.bindValue(":name", character.house);
     if (!houseQuery.exec() || !houseQuery.next()) {
-        qWarning() << "Could not find house_id for house:" << character.house;
+        Logger::instance().warning("Could not find house_id for house: " + character.house);
         return false; // House not found
     }
     int houseId = houseQuery.value(0).toInt();
 
     // 2. Prepare UPDATE statement
     QSqlQuery updateQuery;
-    updateQuery.prepare(
-        "UPDATE characters SET "
-        "first_name = :firstName, "
-        "current_last_name = :lastName, "
-        "birth_date = :birthDate, "
-        "house_id = :houseId, "
-        "blood_status = :bloodStatus "
-        "WHERE id = :id"
-    );
+    updateQuery.prepare(SqlQueries::UPDATE_CHARACTER);
 
     // 3. Bind values
     updateQuery.bindValue(":firstName", character.firstName);
@@ -126,7 +110,7 @@ bool CharacterService::updateCharacter(const CharacterData& character)
 
     // 4. Execute
     if (!updateQuery.exec()) {
-        qWarning() << "Failed to update character:" << updateQuery.lastError().text();
+        Logger::instance().error("Failed to update character: " + updateQuery.lastError().text());
         return false;
     }
 

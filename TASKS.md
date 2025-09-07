@@ -48,5 +48,5 @@ This ensures that all code is covered by tests, improving robustness and maintai
 ## Technical Debt & Refactoring
 
 - [x] Refactor database connection logic into a dedicated singleton or service class.
-- [ ] Move SQL queries from inline code to a separate constants file or a query manager.
-- [ ] Implement a more robust error handling and logging mechanism.
+- [x] Move SQL queries from inline code to a separate constants file or a query manager.
+- [x] Implement a more robust error handling and logging mechanism.

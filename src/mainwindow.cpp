@@ -4,7 +4,7 @@
 #include <QHeaderView>
 #include <QSqlError>
 #include <QMessageBox>
-#include <QDebug>
+#include "Logger.h"
 #include <QVBoxLayout>
 #include <QWidget>
 #include <QLineEdit>
@@ -164,6 +164,7 @@ void MainWindow::on_editCharacterButton_clicked()
     // Fetch full data
     CharacterData currentData = characterService->getCharacterDetails(characterId);
     if (!currentData.isValid()) {
+        Logger::instance().error("Could not fetch character details for editing.");
         QMessageBox::critical(this, "Error", "Could not fetch character details.");
         return;
     }

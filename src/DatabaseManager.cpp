@@ -1,5 +1,5 @@
 #include "DatabaseManager.h"
-#include <QDebug>
+#include "Logger.h"
 #include <QSqlError>
 
 DatabaseManager& DatabaseManager::instance()
@@ -16,11 +16,11 @@ bool DatabaseManager::openDatabase(const QString& path)
     db.setDatabaseName(path);
 
     if (!db.open()) {
-        qWarning() << "DatabaseManager Error:" << db.lastError().text();
+        Logger::instance().error("DatabaseManager Error: " + db.lastError().text());
         return false;
     }
 
-    qDebug() << "Database connection established successfully.";
+    Logger::instance().info("Database connection established successfully.");
     return true;
 }
 

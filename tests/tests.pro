@@ -10,13 +10,14 @@ VPATH = ../src
 INCLUDEPATH += ../src
 
 # Source files from the main project that are needed for the tests
-SOURCES += CharacterService.cpp mainwindow.cpp DatabaseManager.cpp addcharacterdialog.cpp
+SOURCES += CharacterService.cpp mainwindow.cpp DatabaseManager.cpp addcharacterdialog.cpp Logger.cpp
 
 # Test source files
 SOURCES += \
     test_main.cpp \
     test_characterservice.cpp \
-    test_mainwindow.cpp
+    test_mainwindow.cpp \
+    test_logger.cpp
 
 # Test header files
 HEADERS += \
@@ -25,4 +26,6 @@ HEADERS += \
     mainwindow.h \
     test_mainwindow.h \
     DatabaseManager.h \
-    addcharacterdialog.h
+    addcharacterdialog.h \
+    Logger.h \
+    test_logger.h
