@@ -21,6 +21,7 @@ private slots:
     void on_searchTextChanged(const QString &text);
     void on_addCharacterButton_clicked();
     void on_editCharacterButton_clicked();
+    void on_characterSelectionChanged();
 
 private:
     void setupUI();

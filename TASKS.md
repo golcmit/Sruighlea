@@ -36,7 +36,7 @@ This ensures that all code is covered by tests, improving robustness and maintai
 
 ### Feature: Edit Character
 - [x] Add an "Edit" button to the detail view.
-- [ ] Allow users to modify the information of an existing character.
+- [x] Allow users to modify the information of an existing character.
 - [x] Update the character's information in the database.
 
 ## UI/UX Improvements

@@ -11,7 +11,7 @@ int main(int argc, char *argv[])
     int status = 0;
 
     // Open the database connection once for all test suites.
-    if (!DatabaseManager::instance().openDatabase("../reference_materials/FanacalCharacters.db")) {
+    if (!DatabaseManager::instance().openDatabase("reference_materials/FanacalCharacters.db")) {
         qFatal("FATAL: Could not open database for testing. Aborting.");
     }
 

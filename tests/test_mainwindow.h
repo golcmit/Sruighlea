@@ -16,6 +16,7 @@ private slots:
     void testAddCharacterButton_ButtonExists();
     void testEditCharacterButton_ButtonExists();
     void testEditButton_InitiallyDisabled();
+    void testEditCharacterButton_WhenCharacterSelectedAndClicked_OpensEditDialog();
 
 private:
     MainWindow *mainWindow;
