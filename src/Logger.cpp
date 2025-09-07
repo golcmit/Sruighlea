@@ -77,5 +77,6 @@ void Logger::critical(const QString& message)
 {
     if (m_logStream) {
         (*m_logStream) << QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss") << " [CRIT]  " << message << "\n";
+        m_logStream->flush();
     }
 }

@@ -6,10 +6,13 @@ SOURCES += \
     src/CharacterService.cpp \
     src/mainwindow.cpp \
     src/DatabaseManager.cpp \
-    src/addcharacterdialog.cpp
+    src/addcharacterdialog.cpp \
+    src/Logger.cpp
 
 HEADERS += \
     src/CharacterService.h \
     src/mainwindow.h \
     src/DatabaseManager.h \
-    src/addcharacterdialog.h
+    src/addcharacterdialog.h \
+    src/Logger.h \
+    src/SqlQueries.h

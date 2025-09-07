@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Sruighlea
+Exec=Sruighlea
+Icon=icon
+Comment=A database manager for FanacalCharacters.
+Categories=Utility;
+X-AppImage-Version=1b93b31
