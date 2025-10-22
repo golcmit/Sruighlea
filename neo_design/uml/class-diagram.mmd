@@ -1,0 +1,46 @@
+classDiagram
+    class MainWindow {
+        -characterService: CharacterService*
+        -searchLineEdit: QLineEdit*
+        -characterTableView: QTableView*
+        +setupUI()
+        +loadCharacterList()
+        +on_addCharacterButton_clicked()
+        +on_editCharacterButton_clicked()
+    }
+
+    class AddCharacterDialog {
+        -firstNameEdit: QLineEdit*
+        -houseComboBox: QComboBox*
+        +getCharacterData(): CharacterData
+    }
+
+    class CharacterService {
+        +getCharacterListModel(): QSqlQueryModel*
+        +getCharacterDetails(int): CharacterData
+        +addCharacter(CharacterData): bool
+        +updateCharacter(CharacterData): bool
+    }
+
+    class DatabaseManager {
+        <<Singleton>>
+        -m_db: QSqlDatabase
+        +instance(): DatabaseManager&
+        +openDatabase(QString): bool
+        +closeDatabase()
+    }
+
+    class Logger {
+        <<Singleton>>
+        -m_logStream: QTextStream*
+        +instance(): Logger&
+        +info(QString)
+        +error(QString)
+    }
+
+    MainWindow o-- CharacterService : uses
+    MainWindow ..> AddCharacterDialog : creates
+    CharacterService ..> DatabaseManager : uses
+    CharacterService ..> Logger : uses
+    MainWindow ..> Logger : uses
+    DatabaseManager ..> Logger : uses

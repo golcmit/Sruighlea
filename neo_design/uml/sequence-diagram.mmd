@@ -1,0 +1,38 @@
+sequenceDiagram
+    participant User
+    participant MainWindow
+    participant AddCharacterDialog
+    participant CharacterService
+    participant Database
+
+    User->>MainWindow: Addボタンをクリック
+    MainWindow->>AddCharacterDialog: <<create>>
+    MainWindow->>AddCharacterDialog: exec()
+    activate AddCharacterDialog
+    AddCharacterDialog-->>User: ダイアログを表示し入力を待つ
+    User->>AddCharacterDialog: データを入力しSaveボタンをクリック
+    deactivate AddCharacterDialog
+    MainWindow->>AddCharacterDialog: getCharacterData()
+    activate AddCharacterDialog
+    AddCharacterDialog-->>MainWindow: CharacterDataを返す
+    deactivate AddCharacterDialog
+    
+    MainWindow->>CharacterService: addCharacter(CharacterData)
+    activate CharacterService
+    CharacterService->>Database: SQL (INSERT) を実行
+    activate Database
+    Database-->>CharacterService: 実行結果
+    deactivate Database
+    CharacterService-->>MainWindow: 成功(true)
+    deactivate CharacterService
+
+    MainWindow->>CharacterService: getCharacterListModel()
+    activate CharacterService
+    CharacterService->>Database: SQL (SELECT *) を実行
+    activate Database
+    Database-->>CharacterService: QSqlQueryModel
+    deactivate Database
+    CharacterService-->>MainWindow: QSqlQueryModel
+    deactivate CharacterService
+    MainWindow->>MainWindow: テーブルビューを更新
+    MainWindow-->>User: 更新されたリストを表示

@@ -1,0 +1,23 @@
+graph TD
+    subgraph "Presentation Layer (UI)"
+        MainWindow
+        AddCharacterDialog
+    end
+    subgraph "Business Logic Layer"
+        CharacterService
+    end
+    subgraph "Data Access Layer"
+        DatabaseManager
+        QSqlQuery[QSqlQuery/QSqlDatabase]
+    end
+    subgraph "Utility"
+        Logger
+    end
+    MainWindow --> CharacterService
+    MainWindow --> AddCharacterDialog
+    AddCharacterDialog --> CharacterService
+    CharacterService --> QSqlQuery
+    CharacterService --> Logger
+    DatabaseManager --> QSqlQuery
+    MainWindow --> Logger
+    DatabaseManager --> Logger
