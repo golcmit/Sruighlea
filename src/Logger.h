@@ -1,3 +1,4 @@
+// Logger.h (修正後)
 #pragma once
 
 #include <QObject>
@@ -22,11 +23,13 @@ public:
 
 private:
     Logger(QObject *parent = nullptr);
-    ~Logger();
+    ~Logger() override; // ★ QObjectを継承しているので override を推奨
     Logger(const Logger&) = delete;
     Logger& operator=(const Logger&) = delete;
 
-    static Logger* m_instance;
+    // ★ 削除: この行を削除します
+    // static Logger* m_instance; 
+
     QFile* m_logFile = nullptr;
     QTextStream* m_logStream = nullptr;
 };
