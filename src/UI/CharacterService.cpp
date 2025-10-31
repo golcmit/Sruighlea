@@ -1,6 +1,6 @@
 #include "CharacterService.h"
-#include "Logger.h"
-#include "SqlQueries.h"
+#include "../Core/Logger.h"
+#include "../Core/SqlQueries.h"
 #include <QSqlQuery>
 #include <QVariant>
 #include <QSqlQueryModel>

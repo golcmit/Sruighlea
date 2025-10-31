@@ -1,8 +1,8 @@
 // 必要なヘッダーファイルをインクルード
 #include <QApplication>      // Qtアプリケーションの管理クラス
-#include "src/mainwindow.h"  // メインウィンドウのクラス
-#include "src/DatabaseManager.h" // データベース管理クラス
-#include "src/Logger.h"      // ログ出力クラス
+#include "src/UI/mainwindow.h"  // メインウィンドウのクラス
+#include "src/Core/DatabaseManager.h" // データベース管理クラス
+#include "src/Core/Logger.h"      // ログ出力クラス
 #include <QMessageBox>       // メッセージボックス表示クラス
 
 // main関数：アプリケーションのエントリーポイント（ここからプログラムが始まる）
@@ -18,7 +18,7 @@ int main(int argc, char *argv[]) {
 
     // --- データベース接続 ---
     // データベースファイルを開く試み
-    if (!DatabaseManager::instance().openDatabase("reference_materials/FanacalCharacters.db")) {
+    if (!DatabaseManager::instance().openDatabase("neo_design/new_FanacalCharacters.db")) {
         // 接続に失敗した場合
         // 致命的なエラーとしてログを記録
         Logger::instance().critical("Could not connect to the database. The application will now exit.");

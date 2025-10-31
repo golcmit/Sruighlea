@@ -3,16 +3,22 @@ TARGET = Sruighlea
 TEMPLATE = app
 SOURCES += \
     main.cpp \
-    src/CharacterService.cpp \
-    src/mainwindow.cpp \
-    src/DatabaseManager.cpp \
-    src/addcharacterdialog.cpp \
-    src/Logger.cpp
+    src/Services/CharacterService.cpp \
+    src/UI/mainwindow.cpp \
+    src/Core/DatabaseManager.cpp \
+    src/UI/addcharacterdialog.cpp \
+    src/Core/Logger.cpp
 
 HEADERS += \
-    src/CharacterService.h \
-    src/mainwindow.h \
-    src/DatabaseManager.h \
-    src/addcharacterdialog.h \
-    src/Logger.h \
-    src/SqlQueries.h
+    src/Services/CharacterService.h \
+    src/UI/mainwindow.h \
+    src/Core/DatabaseManager.h \
+    src/UI/addcharacterdialog.h \
+    src/Core/Logger.h \
+    src/Core/SqlQueries.h \
+    src/Models/AcademicRecord.h \
+    src/Models/AddressHistory.h \
+    src/Models/Character.h \
+    src/Models/GroupMembership.h \
+    src/Models/OccupationRecord.h \
+    src/Models/Relationship.h \
