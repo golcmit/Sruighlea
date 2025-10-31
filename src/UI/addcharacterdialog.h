@@ -1,7 +1,7 @@
 #pragma once
 
 #include <QDialog>
-#include "CharacterService.h" // For CharacterData
+#include "../Services/CharacterService.h" // For CharacterData
 
 class QLineEdit;
 class QComboBox;

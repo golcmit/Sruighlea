@@ -1,10 +1,10 @@
 #include "mainwindow.h"
-#include "CharacterService.h"
+#include "../Services/CharacterService.h"
 #include "addcharacterdialog.h"
 #include <QHeaderView>
 #include <QSqlError>
 #include <QMessageBox>
-#include "Logger.h"
+#include "../Core/Logger.h"
 #include <QVBoxLayout>
 #include <QWidget>
 #include <QLineEdit>
