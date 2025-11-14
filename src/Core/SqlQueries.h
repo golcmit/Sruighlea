@@ -10,8 +10,7 @@ constexpr const char* GET_CHARACTER_DETAILS =
     "WHERE c.id = :id";
 
 constexpr const char* GET_CHARACTER_LIST =
-    "SELECT c.id, c.first_name, c.current_last_name, h.name AS house, c.blood_status "
-    "FROM characters c LEFT JOIN houses h ON c.house_id = h.id ORDER BY c.id";
+    "SELECT id, full_name, sort_name FROM characters ORDER BY sort_name";
 
 constexpr const char* SEARCH_CHARACTERS_BY_NAME =
     "SELECT c.id, c.first_name, c.current_last_name, h.name AS house, c.blood_status "

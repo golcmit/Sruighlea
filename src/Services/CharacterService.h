@@ -73,4 +73,78 @@ public:
      */
     QList<AddressHistory> getAddressHistory(int characterId);
 
+
+    // --- WBS 1.3.3: 新しい編集系メソッド ---
+
+    /**
+     * @brief [基本情報] キャラクターを新規追加
+     */
+    bool addCharacter(const Character& character);
+
+    /**
+     * @brief [基本情報] キャラクター情報を更新
+     */
+    bool updateCharacter(const Character& character);
+    
+    // (キャラクターの削除も必要であれば)
+    bool deleteCharacter(int characterId);
+
+    /**
+     * @brief [経歴] 職歴を追加
+     */
+    bool addOccupationRecord(const OccupationRecord& record);
+    
+    /**
+     * @brief [経歴] 職歴を更新
+     */
+    bool updateOccupationRecord(const OccupationRecord& record);
+
+    /**
+     * @brief [経歴] 職歴を削除
+     */
+    bool deleteOccupationRecord(int recordId);
+
+    /**
+     * @brief [人間関係] 関係を追加
+     * @note inverse_type_id に基づく双方向の登録ロジックを含む
+     */
+    bool addRelationship(const Relationship& relationship);
+    
+    /**
+     * @brief [人間関係] 関係を更新
+     */
+    bool updateRelationship(const Relationship& relationship);
+
+    /**
+     * @brief [人間関係] 関係を削除
+     */
+    bool deleteRelationship(int relationshipId);
+
+  
+
+    /**
+     * @brief [学業] 成績を追加
+     */
+    bool addAcademicRecord(const AcademicRecord& record);
+
+    // 学業成績を更新
+    bool updateAcademicRecord(int recordId)
+    // 学業成績を削除
+    bool deleteAcademicRecord(int recordId)
+
+    /**
+     * @brief [所属] グループ所属を追加
+     */
+    bool addGroupMembership(const GroupMembership& membership);
+    // (update / delete も同様)
+    bool updateGroupMembership(int membershipId)
+    bool deleteGroupMembership(int membershipId)
+    /**
+     * @brief [住所] 住所履歴を追加
+     */
+    bool addAddressHistory(const AddressHistory& record);
+    bool updateAddressHistory(int recordId);
+    bool deleteAddressHistory(int recordId);
+    // (update / delete も同様)
+
 };
