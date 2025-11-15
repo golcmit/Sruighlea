@@ -6,14 +6,12 @@ SOURCES += \
     src/Services/CharacterService.cpp \
     src/UI/mainwindow.cpp \
     src/Core/DatabaseManager.cpp \
-    src/UI/addcharacterdialog.cpp \
     src/Core/Logger.cpp
 
 HEADERS += \
     src/Services/CharacterService.h \
     src/UI/mainwindow.h \
     src/Core/DatabaseManager.h \
-    src/UI/addcharacterdialog.h \
     src/Core/Logger.h \
     src/Core/SqlQueries.h \
     src/Models/AcademicRecord.h \

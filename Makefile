@@ -56,20 +56,16 @@ SOURCES       = main.cpp \
 		src/Services/CharacterService.cpp \
 		src/UI/mainwindow.cpp \
 		src/Core/DatabaseManager.cpp \
-		src/UI/addcharacterdialog.cpp \
 		src/Core/Logger.cpp moc_CharacterService.cpp \
 		moc_mainwindow.cpp \
-		moc_addcharacterdialog.cpp \
 		moc_Logger.cpp
 OBJECTS       = main.o \
 		CharacterService.o \
 		mainwindow.o \
 		DatabaseManager.o \
-		addcharacterdialog.o \
 		Logger.o \
 		moc_CharacterService.o \
 		moc_mainwindow.o \
-		moc_addcharacterdialog.o \
 		moc_Logger.o
 DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/unix.conf \
@@ -151,7 +147,6 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		Sruighlea.pro src/Services/CharacterService.h \
 		src/UI/mainwindow.h \
 		src/Core/DatabaseManager.h \
-		src/UI/addcharacterdialog.h \
 		src/Core/Logger.h \
 		src/Core/SqlQueries.h \
 		src/Models/AcademicRecord.h \
@@ -163,7 +158,6 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		src/Services/CharacterService.cpp \
 		src/UI/mainwindow.cpp \
 		src/Core/DatabaseManager.cpp \
-		src/UI/addcharacterdialog.cpp \
 		src/Core/Logger.cpp
 QMAKE_TARGET  = Sruighlea
 DESTDIR       = 
@@ -348,8 +342,8 @@ distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents src/Services/CharacterService.h src/UI/mainwindow.h src/Core/DatabaseManager.h src/UI/addcharacterdialog.h src/Core/Logger.h src/Core/SqlQueries.h src/Models/AcademicRecord.h src/Models/AddressHistory.h src/Models/Character.h src/Models/GroupMembership.h src/Models/OccupationRecord.h src/Models/Relationship.h $(DISTDIR)/
-	$(COPY_FILE) --parents main.cpp src/Services/CharacterService.cpp src/UI/mainwindow.cpp src/Core/DatabaseManager.cpp src/UI/addcharacterdialog.cpp src/Core/Logger.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents src/Services/CharacterService.h src/UI/mainwindow.h src/Core/DatabaseManager.h src/Core/Logger.h src/Core/SqlQueries.h src/Models/AcademicRecord.h src/Models/AddressHistory.h src/Models/Character.h src/Models/GroupMembership.h src/Models/OccupationRecord.h src/Models/Relationship.h $(DISTDIR)/
+	$(COPY_FILE) --parents main.cpp src/Services/CharacterService.cpp src/UI/mainwindow.cpp src/Core/DatabaseManager.cpp src/Core/Logger.cpp $(DISTDIR)/
 
 
 clean: compiler_clean 
@@ -381,10 +375,16 @@ compiler_moc_predefs_clean:
 moc_predefs.h: /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp
 	g++ -pipe -O2 -Wall -Wextra -dM -E -o moc_predefs.h /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp
 
-compiler_moc_header_make_all: moc_CharacterService.cpp moc_mainwindow.cpp moc_addcharacterdialog.cpp moc_Logger.cpp
+compiler_moc_header_make_all: moc_CharacterService.cpp moc_mainwindow.cpp moc_Logger.cpp
 compiler_moc_header_clean:
-	-$(DEL_FILE) moc_CharacterService.cpp moc_mainwindow.cpp moc_addcharacterdialog.cpp moc_Logger.cpp
+	-$(DEL_FILE) moc_CharacterService.cpp moc_mainwindow.cpp moc_Logger.cpp
 moc_CharacterService.cpp: src/Services/CharacterService.h \
+		src/Models/Character.h \
+		src/Models/OccupationRecord.h \
+		src/Models/AcademicRecord.h \
+		src/Models/Relationship.h \
+		src/Models/GroupMembership.h \
+		src/Models/AddressHistory.h \
 		moc_predefs.h \
 		/usr/lib/qt5/bin/moc
 	/usr/lib/qt5/bin/moc $(DEFINES) --include /mnt/c/Users/uhei2/novels/HogWarts/Database/Sruighlea/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/mnt/c/Users/uhei2/novels/HogWarts/Database/Sruighlea -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtSql -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/11 -I/usr/include/x86_64-linux-gnu/c++/11 -I/usr/include/c++/11/backward -I/usr/lib/gcc/x86_64-linux-gnu/11/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/Services/CharacterService.h -o moc_CharacterService.cpp
@@ -393,11 +393,6 @@ moc_mainwindow.cpp: src/UI/mainwindow.h \
 		moc_predefs.h \
 		/usr/lib/qt5/bin/moc
 	/usr/lib/qt5/bin/moc $(DEFINES) --include /mnt/c/Users/uhei2/novels/HogWarts/Database/Sruighlea/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/mnt/c/Users/uhei2/novels/HogWarts/Database/Sruighlea -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtSql -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/11 -I/usr/include/x86_64-linux-gnu/c++/11 -I/usr/include/c++/11/backward -I/usr/lib/gcc/x86_64-linux-gnu/11/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/UI/mainwindow.h -o moc_mainwindow.cpp
-
-moc_addcharacterdialog.cpp: src/UI/addcharacterdialog.h \
-		moc_predefs.h \
-		/usr/lib/qt5/bin/moc
-	/usr/lib/qt5/bin/moc $(DEFINES) --include /mnt/c/Users/uhei2/novels/HogWarts/Database/Sruighlea/moc_predefs.h -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++ -I/mnt/c/Users/uhei2/novels/HogWarts/Database/Sruighlea -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtSql -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I/usr/include/c++/11 -I/usr/include/x86_64-linux-gnu/c++/11 -I/usr/include/c++/11/backward -I/usr/lib/gcc/x86_64-linux-gnu/11/include -I/usr/local/include -I/usr/include/x86_64-linux-gnu -I/usr/include src/UI/addcharacterdialog.h -o moc_addcharacterdialog.cpp
 
 moc_Logger.cpp: src/Core/Logger.h \
 		moc_predefs.h \
@@ -426,20 +421,30 @@ main.o: main.cpp src/UI/mainwindow.h \
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o main.cpp
 
 CharacterService.o: src/Services/CharacterService.cpp src/Services/CharacterService.h \
+		src/Models/Character.h \
+		src/Models/OccupationRecord.h \
+		src/Models/AcademicRecord.h \
+		src/Models/Relationship.h \
+		src/Models/GroupMembership.h \
+		src/Models/AddressHistory.h \
 		src/Core/Logger.h \
 		src/Core/SqlQueries.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o CharacterService.o src/Services/CharacterService.cpp
 
 mainwindow.o: src/UI/mainwindow.cpp src/UI/mainwindow.h \
-		src/UI/addcharacterdialog.h
+		src/Services/CharacterService.h \
+		src/Models/Character.h \
+		src/Models/OccupationRecord.h \
+		src/Models/AcademicRecord.h \
+		src/Models/Relationship.h \
+		src/Models/GroupMembership.h \
+		src/Models/AddressHistory.h \
+		src/Core/Logger.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o src/UI/mainwindow.cpp
 
 DatabaseManager.o: src/Core/DatabaseManager.cpp src/Core/DatabaseManager.h \
 		src/Core/Logger.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o DatabaseManager.o src/Core/DatabaseManager.cpp
-
-addcharacterdialog.o: src/UI/addcharacterdialog.cpp src/UI/addcharacterdialog.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o addcharacterdialog.o src/UI/addcharacterdialog.cpp
 
 Logger.o: src/Core/Logger.cpp src/Core/Logger.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o Logger.o src/Core/Logger.cpp
@@ -449,9 +454,6 @@ moc_CharacterService.o: moc_CharacterService.cpp
 
 moc_mainwindow.o: moc_mainwindow.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_mainwindow.o moc_mainwindow.cpp
-
-moc_addcharacterdialog.o: moc_addcharacterdialog.cpp 
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_addcharacterdialog.o moc_addcharacterdialog.cpp
 
 moc_Logger.o: moc_Logger.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_Logger.o moc_Logger.cpp

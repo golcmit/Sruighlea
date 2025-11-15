@@ -128,17 +128,17 @@ public:
     bool addAcademicRecord(const AcademicRecord& record);
 
     // 学業成績を更新
-    bool updateAcademicRecord(int recordId)
+    bool updateAcademicRecord(int recordId);
     // 学業成績を削除
-    bool deleteAcademicRecord(int recordId)
+    bool deleteAcademicRecord(int recordId);
 
     /**
      * @brief [所属] グループ所属を追加
      */
     bool addGroupMembership(const GroupMembership& membership);
     // (update / delete も同様)
-    bool updateGroupMembership(int membershipId)
-    bool deleteGroupMembership(int membershipId)
+    bool updateGroupMembership(int membershipId);
+    bool deleteGroupMembership(int membershipId);
     /**
      * @brief [住所] 住所履歴を追加
      */

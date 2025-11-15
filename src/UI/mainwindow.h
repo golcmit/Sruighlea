@@ -1,7 +1,7 @@
 #include <QMainWindow>
 
 class QTableView;
-class QTextEdit;
+class QTabWidget;
 class QSqlQueryModel;
 class CharacterService;
 class QLineEdit;
@@ -32,8 +32,7 @@ private:
 
     QTableView *characterTableView;
     QWidget *characterDetailsView; // Container for text edit and button
-    QTextEdit *characterDetailsTextEdit;
-    QPushButton *editCharacterButton;
+    QTabWidget *mainTabWidget;
     QSqlQueryModel *characterListModel;
     CharacterService *characterService;
     QLineEdit *searchLineEdit;

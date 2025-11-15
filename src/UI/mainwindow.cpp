@@ -1,6 +1,6 @@
 #include "mainwindow.h"
 #include "../Services/CharacterService.h"
-#include "addcharacterdialog.h"
+//#include "addcharacterdialog.h"
 #include <QHeaderView>
 #include <QSqlError>
 #include <QMessageBox>
@@ -10,7 +10,7 @@
 #include <QLineEdit>
 #include <QPushButton>
 #include <QTableView>
-#include <QTextEdit>
+#include <QTabWidget>
 #include <QSqlQueryModel>
 #include <QSplitter>
 #include <QSqlDatabase>
@@ -132,16 +132,13 @@ void MainWindow::setupCharacterDetailView(QSplitter *splitter)
     QVBoxLayout *detailLayout = new QVBoxLayout(characterDetailsView);
     detailLayout->setContentsMargins(0, 0, 0, 0);
 
-    // 詳細情報を表示する読み取り専用テキストエディット
-    characterDetailsTextEdit = new QTextEdit(this);
-    characterDetailsTextEdit->setReadOnly(true);
-    detailLayout->addWidget(characterDetailsTextEdit);
+    // 1. QTabWidget のインスタンスを作成
+    mainTabWidget = new QTabWidget(this);
+    mainTabWidget->setObjectName("mainTabWidget");
 
-    // キャラクター編集ボタン（初期状態では無効）
-    editCharacterButton = new QPushButton("Edit Character", this);
-    editCharacterButton->setObjectName("editCharacterButton");
-    editCharacterButton->setEnabled(false);
-    detailLayout->addWidget(editCharacterButton);
+    // 2. レイアウトに QTabWidget を追加
+    detailLayout->addWidget(mainTabWidget);
+    
 
     splitter->addWidget(characterDetailsView);
 }
@@ -167,6 +164,7 @@ void MainWindow::loadCharacterList()
  */
 void MainWindow::on_characterTableView_clicked(const QModelIndex &index)
 {
+    /** 
     // インデックスが無効な場合は詳細をクリア
     if (!index.isValid()) {
         characterDetailsTextEdit->clear();
@@ -193,6 +191,7 @@ void MainWindow::on_characterTableView_clicked(const QModelIndex &index)
     } else {
         characterDetailsTextEdit->setText("Character details not found.");
     }
+        **/
 }
 
 /**
@@ -204,6 +203,7 @@ void MainWindow::on_characterTableView_clicked(const QModelIndex &index)
  */
 void MainWindow::on_searchTextChanged(const QString &text)
 {
+    /*
     // 検索テキストが空の場合は全リストを表示
     if (text.isEmpty()) {
         loadCharacterList();
@@ -213,6 +213,7 @@ void MainWindow::on_searchTextChanged(const QString &text)
     // 名前で検索してモデルを更新
     QSqlQueryModel* newModel = characterService->searchCharactersByName(text);
     updateCharacterViewModel(newModel);
+    */
 }
 
 /**
@@ -223,6 +224,7 @@ void MainWindow::on_searchTextChanged(const QString &text)
  */
 void MainWindow::on_addCharacterButton_clicked()
 {
+    /*
     // キャラクター追加ダイアログを表示
     AddCharacterDialog dialog(this);
     if (dialog.exec() == QDialog::Accepted) {
@@ -237,6 +239,7 @@ void MainWindow::on_addCharacterButton_clicked()
             QMessageBox::warning(this, "Error", "Failed to add character to the database.");
         }
     }
+        */
 }
 
 /**
@@ -248,6 +251,7 @@ void MainWindow::on_addCharacterButton_clicked()
  */
 void MainWindow::on_editCharacterButton_clicked()
 {
+    /*
     // 選択された行のキャラクターIDを取得
     QModelIndexList selection = characterTableView->selectionModel()->selectedRows();
     if (selection.isEmpty()) {
@@ -286,6 +290,7 @@ void MainWindow::on_editCharacterButton_clicked()
         }
     }
 #endif
+*/
 }
 
 /**
@@ -298,30 +303,38 @@ void MainWindow::on_editCharacterButton_clicked()
  */
 void MainWindow::updateCharacterViewModel(QSqlQueryModel *newModel)
 {
-    // テーブルビューに新しいモデルを設定
-    characterTableView->setModel(newModel);
-    
-    // 選択状態の変更を監視
-    connect(characterTableView->selectionModel(), &QItemSelectionModel::selectionChanged,
-            this, &MainWindow::on_characterSelectionChanged);
-
-    // 古いモデルを後で削除（メモリリーク防止）
     if (characterListModel) {
         characterListModel->deleteLater();
     }
-    
-    // 新しいモデルを保存し、親を設定
     characterListModel = newModel;
-    characterListModel->setParent(this);
+    characterListModel->setParent(this); // 親を設定
 
-    // 列のヘッダー名を設定
-    characterListModel->setHeaderData(1, Qt::Horizontal, tr("First Name"));
-    characterListModel->setHeaderData(2, Qt::Horizontal, tr("Last Name"));
-    characterListModel->setHeaderData(3, Qt::Horizontal, tr("House"));
-    characterListModel->setHeaderData(4, Qt::Horizontal, tr("Blood Status"));
+    characterTableView->setModel(characterListModel);
+
+    // 選択状態の変更を監視 (既にあれば不要)
+    connect(characterTableView->selectionModel(), &QItemSelectionModel::selectionChanged,
+            this, &MainWindow::on_characterSelectionChanged);
+
+    // --- ★ここから修正★ ---
+    // 新しいクエリ (SELECT id, full_name, sort_name) に合わせる
+
+    // 列0: id (非表示)
+    characterTableView->setColumnHidden(0, true); 
+
+    // 列1: full_name (表示)
+    characterListModel->setHeaderData(1, Qt::Horizontal, tr("Full Name"));
+    characterTableView->setColumnHidden(1, false);
+
+    // 列2: sort_name (非表示)
+    characterListModel->setHeaderData(2, Qt::Horizontal, tr("Sort Name"));
+    characterTableView->setColumnHidden(2, true); // sort_name はソート用なので非表示でOK
+
+    // ★ 古い setHeaderData (3, 4) は削除する
+    // characterListModel->setHeaderData(3, ...);
+    // characterListModel->setHeaderData(4, ...);
     
-    // ID列（列0）を非表示に設定
-    characterTableView->setColumnHidden(0, true);
+    // ★ テーブルビューのヘッダー幅を調整
+    characterTableView->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
 }
 
 /**

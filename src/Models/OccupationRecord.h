@@ -26,4 +26,4 @@ public:
     bool isValid() const {
         return id != -1;
     }
-}
+};
