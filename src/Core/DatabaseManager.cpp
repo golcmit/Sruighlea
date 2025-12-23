@@ -2,7 +2,8 @@
 #include "DatabaseManager.h" // このクラス自身のヘッダー
 #include "Logger.h" // ログ出力用のクラス
 #include <QSqlError> // Qt SQLのエラー情報を扱うクラス
-
+#include <QDebug> 
+# include <QFileInfo> 
 // シングルトンインスタンスを取得するための静的関数
 // この関数を通じてのみ、DatabaseManagerの唯一のインスタンスにアクセスできる
 DatabaseManager& DatabaseManager::instance()
@@ -24,7 +25,8 @@ bool DatabaseManager::openDatabase(const QString& path)
     QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
     // データベースファイルのパスを設定
     db.setDatabaseName(path);
-
+    // DatabaseManager.cpp 内でパスを出す
+qDebug() << "Opening database at:" << QFileInfo(path).absoluteFilePath();
     // データベースを開く
     if (!db.open()) {
         // 接続に失敗した場合、エラーログを出力

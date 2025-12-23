@@ -7,8 +7,13 @@ class CharacterService;
 class QLineEdit;
 class QPushButton;
 class QSplitter;
-
+class QFormLayout;
+class QLabel;
+class QDateEdit;
+class QTextEdit;
+class QDebug;
 class MainWindow : public QMainWindow
+
 {
     Q_OBJECT
 
@@ -29,12 +34,24 @@ private:
     void setupCharacterDetailView(QSplitter *splitter);
     void loadCharacterList();
     void updateCharacterViewModel(QSqlQueryModel *newModel);
-
-    QTableView *characterTableView;
-    QWidget *characterDetailsView; // Container for text edit and button
-    QTabWidget *mainTabWidget;
-    QSqlQueryModel *characterListModel;
-    CharacterService *characterService;
-    QLineEdit *searchLineEdit;
-    QPushButton *addCharacterButton;
+    void setupBasicInfoTab();
+    QTableView *characterTableView =nullptr;
+    QWidget *characterDetailsView =nullptr; // Container for text edit and button
+    QTabWidget *mainTabWidget =nullptr;
+    QSqlQueryModel *characterListModel =nullptr;
+    CharacterService *characterService =nullptr;
+    QLineEdit *searchLineEdit =nullptr;
+    QPushButton *addCharacterButton =nullptr;
+    QWidget *basicInfoTab =nullptr;
+    QFormLayout *basicInfoLayout =nullptr;
+    
+    QLineEdit *fullNameLineEdit =nullptr;
+    QLineEdit *sortNameLineEdit =nullptr;
+    QLineEdit *bloodStatusLineEdit =nullptr;
+    QDateEdit *birthDateEdit =nullptr;
+    QDateEdit *deathDateEdit =nullptr;
+    QLineEdit *patronusLineEdit =nullptr;
+    QLineEdit *speciesLineEdit =nullptr;
+    QTextEdit *wandTextEdit =nullptr;
+    QTextEdit *notesTextEdit =nullptr;
 };

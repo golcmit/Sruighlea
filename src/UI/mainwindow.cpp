@@ -14,7 +14,11 @@
 #include <QSqlQueryModel>
 #include <QSplitter>
 #include <QSqlDatabase>
-
+#include <QFormLayout>
+#include <QLabel>
+#include <QDateEdit>
+#include <QTextEdit>
+#include <QDebug>
 /**
  * @brief MainWindowのコンストラクタ
  * @param parent 親ウィジェット
@@ -82,7 +86,7 @@ void MainWindow::setupUI()
     // スプリッターの各領域のサイズ比率を設定
     splitter->setStretchFactor(0, 1);
     splitter->setStretchFactor(1, 1);
-
+    /*
     // シグナルとスロットの接続
     connect(characterTableView, &QTableView::clicked,
             this, &MainWindow::on_characterTableView_clicked);
@@ -92,6 +96,7 @@ void MainWindow::setupUI()
             this, &MainWindow::on_addCharacterButton_clicked);
     connect(editCharacterButton, &QPushButton::clicked,
             this, &MainWindow::on_editCharacterButton_clicked);
+    */
 }
 
 /**
@@ -118,6 +123,70 @@ void MainWindow::setupCharacterListView(QSplitter *splitter)
     splitter->addWidget(characterTableView);
 }
 
+
+
+void MainWindow::setupBasicInfoTab()
+{
+    qDebug() << "BasicInfoTab: Start";
+    // 1. タブ本体となるウィジェットとレイアウトを作成
+    basicInfoTab = new QWidget(this);
+    basicInfoLayout = new QFormLayout(basicInfoTab); // フォームレイアウト
+    qDebug() << "BasicInfoTab: Widgets creating...";
+    basicInfoLayout->setContentsMargins(10, 10, 10, 10);
+    basicInfoLayout->setSpacing(10);
+
+    // 2. 各フィールドのウィジェットをインスタンス化
+    fullNameLineEdit = new QLineEdit(this);
+    sortNameLineEdit = new QLineEdit(this);
+    bloodStatusLineEdit = new QLineEdit(this);
+    patronusLineEdit = new QLineEdit(this);
+    speciesLineEdit = new QLineEdit(this);
+    birthDateEdit = new QDateEdit(this);
+    birthDateEdit->setCalendarPopup(true);
+    deathDateEdit = new QDateEdit(this);
+    deathDateEdit->setCalendarPopup(true);
+    
+    // 複数行テキスト
+    wandTextEdit = new QTextEdit(this);
+    wandTextEdit->setFixedHeight(80); // 高さを固定 (例)
+    notesTextEdit = new QTextEdit(this);
+    notesTextEdit->setFixedHeight(100); // 高さを固定 (例)
+    qDebug() << "BasicInfoTab: Row adding...";
+    // ★ WBS 2.0 (閲覧フェーズ) のため、すべて読み取り専用に設定
+    fullNameLineEdit->setReadOnly(true);
+    sortNameLineEdit->setReadOnly(true);
+    bloodStatusLineEdit->setReadOnly(true);
+    patronusLineEdit->setReadOnly(true);
+    speciesLineEdit->setReadOnly(true);
+    birthDateEdit->setReadOnly(true);
+    deathDateEdit->setReadOnly(true);
+    wandTextEdit->setReadOnly(true);
+    notesTextEdit->setReadOnly(true);
+
+    // 3. レイアウトにウィジェットを追加
+    basicInfoLayout->addRow(new QLabel("Full Name:", this), fullNameLineEdit);
+    basicInfoLayout->addRow(new QLabel("Sort Name:", this), sortNameLineEdit);
+    basicInfoLayout->addRow(new QLabel("Birth Date:", this), birthDateEdit);
+    basicInfoLayout->addRow(new QLabel("Death Date:", this), deathDateEdit);
+    basicInfoLayout->addRow(new QLabel("Blood Status:", this), bloodStatusLineEdit);
+    basicInfoLayout->addRow(new QLabel("Patronus:", this), patronusLineEdit);
+    basicInfoLayout->addRow(new QLabel("Species:", this), speciesLineEdit);
+    basicInfoLayout->addRow(new QLabel("Wand (JSON):", this), wandTextEdit);
+    basicInfoLayout->addRow(new QLabel("Notes:", this), notesTextEdit);
+
+    // 4. QTabWidget にこのタブを追加
+    qDebug() << "BasicInfoTab: Adding to mainTabWidget. mainTabWidget is:" << mainTabWidget;
+
+    // ★ おそらくここが怪しい
+    if (mainTabWidget) {
+        mainTabWidget->addTab(basicInfoTab, "Basic Info");
+    } else {
+        qDebug() << "CRITICAL: mainTabWidget is NULL!";
+    }
+
+    qDebug() << "BasicInfoTab: End";
+}
+
 /**
  * @brief キャラクター詳細ビューのセットアップ
  * @param splitter 親となるスプリッターウィジェット
@@ -132,13 +201,15 @@ void MainWindow::setupCharacterDetailView(QSplitter *splitter)
     QVBoxLayout *detailLayout = new QVBoxLayout(characterDetailsView);
     detailLayout->setContentsMargins(0, 0, 0, 0);
 
+    
+
     // 1. QTabWidget のインスタンスを作成
     mainTabWidget = new QTabWidget(this);
     mainTabWidget->setObjectName("mainTabWidget");
 
     // 2. レイアウトに QTabWidget を追加
     detailLayout->addWidget(mainTabWidget);
-    
+    setupBasicInfoTab();
 
     splitter->addWidget(characterDetailsView);
 }
@@ -303,38 +374,27 @@ void MainWindow::on_editCharacterButton_clicked()
  */
 void MainWindow::updateCharacterViewModel(QSqlQueryModel *newModel)
 {
+    if (!newModel) return;
+
     if (characterListModel) {
         characterListModel->deleteLater();
     }
     characterListModel = newModel;
-    characterListModel->setParent(this); // 親を設定
-
+    
+    // 1. モデルをセット
     characterTableView->setModel(characterListModel);
 
-    // 選択状態の変更を監視 (既にあれば不要)
-    connect(characterTableView->selectionModel(), &QItemSelectionModel::selectionChanged,
-            this, &MainWindow::on_characterSelectionChanged);
-
-    // --- ★ここから修正★ ---
-    // 新しいクエリ (SELECT id, full_name, sort_name) に合わせる
-
-    // 列0: id (非表示)
-    characterTableView->setColumnHidden(0, true); 
-
-    // 列1: full_name (表示)
-    characterListModel->setHeaderData(1, Qt::Horizontal, tr("Full Name"));
-    characterTableView->setColumnHidden(1, false);
-
-    // 列2: sort_name (非表示)
-    characterListModel->setHeaderData(2, Qt::Horizontal, tr("Sort Name"));
-    characterTableView->setColumnHidden(2, true); // sort_name はソート用なので非表示でOK
-
-    // ★ 古い setHeaderData (3, 4) は削除する
-    // characterListModel->setHeaderData(3, ...);
-    // characterListModel->setHeaderData(4, ...);
+    // 2. 一旦、すべての設定をリセット（コメントアウトではなく、あえて「見える」設定にする）
+    for (int i = 0; i < characterListModel->columnCount(); ++i) {
+        characterTableView->setColumnHidden(i, false); // すべて表示
+    }
     
-    // ★ テーブルビューのヘッダー幅を調整
-    characterTableView->horizontalHeader()->setSectionResizeMode(1, QHeaderView::Stretch);
+    // 3. ヘッダーを表示して幅を自動調整
+    characterTableView->horizontalHeader()->setVisible(true);
+    characterTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+
+    // デバッグ：これで見えなかったら View 自体がおかしい
+    Logger::instance().debug("Model set to TableView. Column count: " + QString::number(characterListModel->columnCount()));
 }
 
 /**
@@ -346,5 +406,5 @@ void MainWindow::updateCharacterViewModel(QSqlQueryModel *newModel)
 void MainWindow::on_characterSelectionChanged()
 {
     const QModelIndexList selectedRows = characterTableView->selectionModel()->selectedRows();
-    editCharacterButton->setEnabled(!selectedRows.isEmpty());
+    // editCharacterButton->setEnabled(!selectedRows.isEmpty());
 }

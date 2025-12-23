@@ -50,21 +50,36 @@ QList<OccupationRecord> CharacterService::getOccupationHistory(int characterId)
  */
 QSqlQueryModel* CharacterService::getCharacterListModel()
 {
-    // 1. 新しいモデルインスタンスを作成
-    QSqlQueryModel* model = new QSqlQueryModel();
-
-    // 2. SqlQueries.h の GET_CHARACTER_LIST を使用
-    model->setQuery(SqlQueries::GET_CHARACTER_LIST);
-
-    // 3. エラーチェック (推奨)
-    if (model->lastError().isValid()) {
-        Logger::instance().error("Failed to get character list: " + model->lastError().text());
-        delete model; // 失敗したので削除
+   QSqlDatabase db = QSqlDatabase::database(); // デフォルトの接続を取得
+    if (!db.isOpen()) {
+        Logger::instance().error("CharacterService: Database is NOT open!");
         return nullptr;
     }
+    Logger::instance().debug("CharacterService: Database is open using connection: " + db.connectionName());
 
-    // 4. モデルを返す
+    // 2. クエリ実行
+    QSqlQueryModel* model = new QSqlQueryModel();
+    const QString queryStr = "SELECT id, full_name, sort_name FROM characters ORDER BY sort_name";
+    
+    model->setQuery(queryStr);
+
+    // 3. 詳細なエラーチェック
+    if (model->lastError().isValid()) {
+        Logger::instance().error("SQL Error: " + model->lastError().text());
+        Logger::instance().error("Executed Query: " + model->query().lastQuery());
+    } else {
+        int rows = model->rowCount();
+        Logger::instance().info(QString("Query successful. Rows found: %1").arg(rows));
+        
+        // もし 0 件なら、テーブルの中身が見えていない
+        if (rows == 0) {
+            Logger::instance().warning("No rows found in 'characters' table. Check if the DB file is the same as CLI.");
+        }
+    }
+
     return model;
+    
+
 }
 
 

@@ -2,7 +2,8 @@
 
 #include <QSqlDatabase>
 #include <QString>
-
+#include <QDebug>
+# include <QFileInfo> 
 class DatabaseManager
 {
 public:
