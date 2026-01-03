@@ -86,10 +86,12 @@ void MainWindow::setupUI()
     // スプリッターの各領域のサイズ比率を設定
     splitter->setStretchFactor(0, 1);
     splitter->setStretchFactor(1, 1);
-    /*
+    
     // シグナルとスロットの接続
-    connect(characterTableView, &QTableView::clicked,
+    auto connection=connect(characterTableView, &QTableView::clicked,
             this, &MainWindow::on_characterTableView_clicked);
+
+    /*
     connect(searchLineEdit, &QLineEdit::textChanged,
             this, &MainWindow::on_searchTextChanged);
     connect(addCharacterButton, &QPushButton::clicked,
@@ -145,7 +147,11 @@ void MainWindow::setupBasicInfoTab()
     birthDateEdit->setCalendarPopup(true);
     deathDateEdit = new QDateEdit(this);
     deathDateEdit->setCalendarPopup(true);
+    schoolLineEdit = new QLineEdit(this);
+    houseLineEdit = new QLineEdit(this);
+    lineageLineEdit = new QLineEdit(this);
     
+
     // 複数行テキスト
     wandTextEdit = new QTextEdit(this);
     wandTextEdit->setFixedHeight(80); // 高さを固定 (例)
@@ -162,6 +168,11 @@ void MainWindow::setupBasicInfoTab()
     deathDateEdit->setReadOnly(true);
     wandTextEdit->setReadOnly(true);
     notesTextEdit->setReadOnly(true);
+    schoolLineEdit->setReadOnly(true);
+    houseLineEdit->setReadOnly(true);
+    lineageLineEdit->setReadOnly(true);
+
+
 
     // 3. レイアウトにウィジェットを追加
     basicInfoLayout->addRow(new QLabel("Full Name:", this), fullNameLineEdit);
@@ -173,11 +184,15 @@ void MainWindow::setupBasicInfoTab()
     basicInfoLayout->addRow(new QLabel("Species:", this), speciesLineEdit);
     basicInfoLayout->addRow(new QLabel("Wand (JSON):", this), wandTextEdit);
     basicInfoLayout->addRow(new QLabel("Notes:", this), notesTextEdit);
+        // レイアウトへの追加（お好みの位置に）
+    basicInfoLayout->addRow(new QLabel("School:", this), schoolLineEdit);
+    basicInfoLayout->addRow(new QLabel("House:", this), houseLineEdit);
+    basicInfoLayout->addRow(new QLabel("Lineage:", this), lineageLineEdit);
 
     // 4. QTabWidget にこのタブを追加
     qDebug() << "BasicInfoTab: Adding to mainTabWidget. mainTabWidget is:" << mainTabWidget;
 
-    // ★ おそらくここが怪しい
+    
     if (mainTabWidget) {
         mainTabWidget->addTab(basicInfoTab, "Basic Info");
     } else {
@@ -210,8 +225,26 @@ void MainWindow::setupCharacterDetailView(QSplitter *splitter)
     // 2. レイアウトに QTabWidget を追加
     detailLayout->addWidget(mainTabWidget);
     setupBasicInfoTab();
-
+    setupCareerTab();
     splitter->addWidget(characterDetailsView);
+}
+
+void MainWindow::setupCareerTab()
+{
+    careerTab = new QWidget(this);
+    QVBoxLayout *layout = new QVBoxLayout(careerTab);
+
+    layout->addWidget(new QLabel("Academic Records (Years/Subjects):", this));
+    academicDisplayText = new QTextEdit(this);
+    academicDisplayText->setReadOnly(true);
+    layout->addWidget(academicDisplayText);
+
+    layout->addWidget(new QLabel("Occupation History:", this));
+    occupationDisplayText = new QTextEdit(this);
+    occupationDisplayText->setReadOnly(true);
+    layout->addWidget(occupationDisplayText);
+
+    mainTabWidget->addTab(careerTab, "Career");
 }
 
 /**
@@ -226,6 +259,71 @@ void MainWindow::loadCharacterList()
     updateCharacterViewModel(newModel);
 }
 
+
+
+/**
+ * @brief 基本情報タブの表示更新
+ */
+void MainWindow::displayBasicInfo(const Character &details)
+{
+    fullNameLineEdit->setText(details.fullName);
+    sortNameLineEdit->setText(details.sortName);
+    bloodStatusLineEdit->setText(details.bloodStatus);
+    patronusLineEdit->setText(details.patronus);
+    speciesLineEdit->setText(details.species);
+    birthDateEdit->setDate(details.birthDate);
+    deathDateEdit->setDate(details.deathDate);
+    wandTextEdit->setPlainText(details.wand);
+    notesTextEdit->setPlainText(details.notes);
+    schoolLineEdit->setText(details.schoolName);
+    houseLineEdit->setText(details.houseName);
+    lineageLineEdit->setText(details.lineageName);
+}
+
+/**
+ * @brief 経歴（学業・職歴）タブの表示更新
+ */
+void MainWindow::displayCareer(const Character &details)
+{
+    // 学業情報の整形
+    QString acText;
+    for (const auto &ac : details.academics) {
+        QString exam = ac.isOwl ? " [O.W.L.]" : (ac.isNewt ? " [N.E.W.T.]" : "");
+        acText += QString("Year %1: %2 - Grade: %3%4\n")
+                    .arg(ac.academicYear).arg(ac.subjectName).arg(ac.grade).arg(exam);
+    }
+    academicDisplayText->setPlainText(acText);
+
+    // 職歴情報の整形
+    QString ocText;
+    for (const auto &oc : details.occupations) {
+        QString start = oc.startDate.toString("yyyy");
+        QString end = oc.endDate.isValid() ? oc.endDate.toString("yyyy") : "Present";
+        ocText += QString("%1 at %2 (%3 - %4)\n")
+                    .arg(oc.occupation).arg(oc.organization).arg(start).arg(end);
+    }
+    occupationDisplayText->setPlainText(ocText);
+}
+
+/**
+ * @brief 人間関係タブの表示更新
+ */
+void MainWindow::displayRelationships(const Character &details)
+{
+    // ここに QSqlQuery はもういりません
+    QString relText;
+    for (const auto &rel : details.relationships) {
+        relText += QString("・%1 : %2\n").arg(rel.relationshipTypeName).arg(rel.toCharacterName);
+        if (!rel.notes.isEmpty()) {
+            relText += QString("   (備考: %1)\n").arg(rel.notes);
+        }
+    }
+    // MainWindow.h に relationDisplayText を追加した前提です
+    if (relationDisplayText) {
+        relationDisplayText->setPlainText(relText);
+    }
+}
+
 /**
  * @brief キャラクターリストのアイテムがクリックされた時の処理
  * @param index クリックされたアイテムのインデックス
@@ -233,37 +331,28 @@ void MainWindow::loadCharacterList()
  * 選択されたキャラクターの詳細情報を取得し、
  * 詳細ビューに表示する
  */
+
+
+
+
 void MainWindow::on_characterTableView_clicked(const QModelIndex &index)
 {
-    /** 
-    // インデックスが無効な場合は詳細をクリア
-    if (!index.isValid()) {
-        characterDetailsTextEdit->clear();
-        return;
-    }
-
-    // 選択された行からキャラクターIDを取得
-    int characterId = characterListModel->data(characterListModel->index(index.row(), 0)).toInt();
+    if (!index.isValid()) return;
     
-    // CharacterServiceから詳細情報を取得
-    CharacterData details = characterService->getCharacterDetails(characterId);
-
-    // 詳細情報が有効な場合、フォーマットして表示
+    // 1. IDの取得
+    int characterId = characterListModel->data(characterListModel->index(index.row(), 0)).toInt();
+  
+    // 2. サービス層から全データ(経歴・関係性含む)をワンショットで取得
+    Character details = characterService->getCharacterDetails(characterId);
+   
+    // 3. UIへの反映（各表示メソッドに委譲）
     if (details.isValid()) {
-        QString detailText;
-        detailText += QString("ID: %1\n").arg(details.id);
-        detailText += QString("First Name: %1\n").arg(details.firstName);
-        detailText += QString("Last Name: %1\n").arg(details.lastName);
-        detailText += QString("Birth Date: %1\n").arg(details.birthDate.toString(Qt::ISODate));
-        detailText += QString("House: %1\n").arg(details.house);
-        detailText += QString("Blood Status: %1\n").arg(details.bloodStatus);
-
-        characterDetailsTextEdit->setText(detailText);
-    } else {
-        characterDetailsTextEdit->setText("Character details not found.");
+        displayBasicInfo(details);
+        displayCareer(details);
+        displayRelationships(details);
     }
-        **/
 }
+
 
 /**
  * @brief 検索テキストが変更された時の処理

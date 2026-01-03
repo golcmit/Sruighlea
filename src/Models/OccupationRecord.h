@@ -2,28 +2,16 @@
 #include <QString>
 #include <QDate>
 
-/*
- * @brief occupation_history (職歴) テーブルの1レコードを保持するデータクラス
+/**
+ * @brief occupation_history テーブルの1レコード
  */
+struct OccupationRecord {
+    int id = -1;
+    int characterId = -1;
+    QString occupation;   // 役職
+    QString organization; // 組織
+    QDate startDate;
+    QDate endDate;
 
-class OccupationRecord
-{
-public:
-    OccupationRecord()
-    : id(-1), characterId(-1)
-    {}
-
-    int id;            // id (PK)
-    int characterId;   // character_id (FK)
-    QString occupation;  // occupation
-    QString organization; // organization
-
-    // 履歴データなので日付が重要
-    QDate startDate;   // start_date
-    QDate endDate;     // end_date (無効な日付
-    
-    // データが有効か（DBからロードされたか）の簡易チェック
-    bool isValid() const {
-        return id != -1;
-    }
+    bool isValid() const { return id != -1; }
 };

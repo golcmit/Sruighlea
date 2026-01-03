@@ -1,29 +1,26 @@
-// src/Relationship.h (たたき台)
 #pragma once
 
 #include <QString>
 #include <QDate>
 
-/*
- * @brief relationships (人間関係) テーブルの1レコードを保持するデータクラス
+/**
+ * @brief relationships テーブルの1レコードを保持する構造体
  */
-class Relationship
+struct Relationship
 {
-public:
-    Relationship()
-        : id(-1), fromCharacterId(-1), toCharacterId(-1), typeId(-1)
-    {}
-
-    int id;               // id (PK)
-    int fromCharacterId;  // from_character_id (FK)
-    int toCharacterId;    // to_character_id (FK)
-    int typeId;           // type_id (FK)
+    int id = -1;
+    int fromCharacterId = -1;
+    int toCharacterId = -1;
+    int typeId = -1;
     
-    QDate startDate;      // start_date
-    QDate endDate;        // end_date
-    QString notes;        // notes
+    QDate startDate;
+    QDate endDate;
+    QString notes;
 
-    // データが有効か（DBからロードされたか）の簡易チェック
+    // ★ 追加：JOIN で取得する「相手の名前」と「関係の種類名」
+    QString toCharacterName;
+    QString relationshipTypeName;
+
     bool isValid() const {
         return id != -1;
     }

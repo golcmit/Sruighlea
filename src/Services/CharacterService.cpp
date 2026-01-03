@@ -30,16 +30,141 @@ CharacterService::~CharacterService()
  */
 Character CharacterService::getCharacterDetails(int characterId)
 {
-    // (まだ実装しない)
-    Logger::instance().debug(QString("getCharacterDetails called for id %1 (not implemented)").arg(characterId));
-    return Character(); // 空のCharacterを返す
+    Character c;
+    QSqlQuery query;
+
+    // 1. 基本情報の取得 (JOIN含む)
+    query.prepare(
+        "SELECT c.*, s.name AS school_name, h.name AS house_name, l.name AS lineage_name "
+        "FROM characters c "
+        "LEFT JOIN schools s ON c.school_id = s.id "
+        "LEFT JOIN houses h ON c.house_id = h.id "
+        "LEFT JOIN lineages l ON c.lineage_id = l.id "
+        "WHERE c.id = :id"
+    );
+    query.bindValue(":id", characterId);
+
+    if (!query.exec() || !query.next()) {
+        Logger::instance().error("Failed to fetch character basic info: " + query.lastError().text());
+        return c;
+    }
+
+    // 基本フィールドのセット
+    c.id = query.value("id").toInt();
+    c.fullName = query.value("full_name").toString();
+    c.sortName = query.value("sort_name").toString();
+    c.bloodStatus = query.value("blood_status").toString();
+    c.patronus = query.value("patronus").toString();
+    c.species = query.value("species").toString();
+    c.wand = query.value("wand").toString();
+    c.notes = query.value("notes").toString();
+    c.birthDate = QDate::fromString(query.value("birth_date").toString(), Qt::ISODate);
+    c.deathDate = QDate::fromString(query.value("death_date").toString(), Qt::ISODate);
+    c.schoolName = query.value("school_name").toString();
+    c.houseName = query.value("house_name").toString();
+    c.lineageName = query.value("lineage_name").toString();
+
+    // 2. 関連リストの取得 (各専門関数に委譲)
+    c.academics = getAcademicRecords(characterId);
+    c.occupations = getOccupationHistory(characterId);
+    c.relationships = getRelationships(characterId);
+
+    return c;
 }
+
+/**
+ * @brief 学業記録リストの取得
+ */
+QList<AcademicRecord> CharacterService::getAcademicRecords(int characterId)
+{
+    QList<AcademicRecord> list;
+    QSqlQuery query;
+    query.prepare(
+        "SELECT ar.*, s.name AS subject_name FROM academic_records ar "
+        "JOIN subjects s ON ar.subject_id = s.id "
+        "WHERE ar.character_id = :id ORDER BY ar.academic_year ASC"
+    );
+    query.bindValue(":id", characterId);
+
+    if (query.exec()) {
+        while (query.next()) {
+            AcademicRecord rec;
+            rec.id = query.value("id").toInt();
+            rec.academicYear = query.value("academic_year").toInt();
+            rec.subjectName = query.value("subject_name").toString();
+            rec.grade = query.value("grade").toString();
+            rec.isOwl = query.value("is_owl").toBool();
+            rec.isNewt = query.value("is_newt").toBool();
+            rec.notes = query.value("notes").toString();
+            list.append(rec);
+        }
+    }
+    return list;
+}
+
+/**
+ * @brief 職歴リストの取得
+ */
 QList<OccupationRecord> CharacterService::getOccupationHistory(int characterId)
 {
-    
-    Q_UNUSED(characterId); // 引数を使わない警告を抑制
-    return QList<OccupationRecord>(); // 空のListを返す
+    QList<OccupationRecord> list;
+    QSqlQuery query;
+    query.prepare(
+        "SELECT * FROM occupation_history WHERE character_id = :id "
+        "ORDER BY start_date DESC"
+    );
+    query.bindValue(":id", characterId);
+
+    if (query.exec()) {
+        while (query.next()) {
+            OccupationRecord rec;
+            rec.id = query.value("id").toInt();
+            rec.occupation = query.value("occupation").toString();
+            rec.organization = query.value("organization").toString();
+            rec.startDate = QDate::fromString(query.value("start_date").toString(), Qt::ISODate);
+            rec.endDate = QDate::fromString(query.value("end_date").toString(), Qt::ISODate);
+            list.append(rec);
+        }
+    }
+    return list;
 }
+
+/**
+ * @brief 人間関係リストの取得
+ */
+QList<Relationship> CharacterService::getRelationships(int characterId)
+{
+    QList<Relationship> list;
+    QSqlQuery query;
+    query.prepare(
+        "SELECT r.*, c.full_name AS target_name, rt.name AS type_name "
+        "FROM relationships r "
+        "JOIN characters c ON r.to_character_id = c.id "
+        "JOIN relationship_types rt ON r.relationship_type_id = rt.id "
+        "WHERE r.from_character_id = :id"
+    );
+    query.bindValue(":id", characterId);
+
+    if (query.exec()) {
+        while (query.next()) {
+            Relationship rel;
+            rel.id = query.value("id").toInt();
+            rel.fromCharacterId = query.value("from_character_id").toInt();
+            rel.toCharacterId = query.value("to_character_id").toInt();
+            rel.toCharacterName = query.value("target_name").toString();
+            rel.relationshipTypeName = query.value("type_name").toString();
+            rel.startDate = QDate::fromString(query.value("start_date").toString(), Qt::ISODate);
+            rel.endDate = QDate::fromString(query.value("end_date").toString(), Qt::ISODate);
+            rel.notes = query.value("notes").toString();
+            list.append(rel);
+        }
+    }
+    return list;
+}
+
+
+
+
 
 /**
  * @brief 全キャラクターのリストを取得するためのモデルを作成
@@ -72,9 +197,6 @@ QSqlQueryModel* CharacterService::getCharacterListModel()
         Logger::instance().info(QString("Query successful. Rows found: %1").arg(rows));
         
         // もし 0 件なら、テーブルの中身が見えていない
-        if (rows == 0) {
-            Logger::instance().warning("No rows found in 'characters' table. Check if the DB file is the same as CLI.");
-        }
     }
 
     return model;
@@ -98,17 +220,9 @@ bool CharacterService::addOccupationRecord(const OccupationRecord& record)
     return false;
 }
 
-QList<AcademicRecord> CharacterService::getAcademicRecords(int characterId)
-{
-    Q_UNUSED(characterId);
-    return QList<AcademicRecord>();
-}
 
-QList<Relationship> CharacterService::getRelationships(int characterId)
-{
-    Q_UNUSED(characterId);
-    return QList<Relationship>();
-}
+
+
 
 QList<GroupMembership> CharacterService::getGroupMemberships(int characterId)
 {

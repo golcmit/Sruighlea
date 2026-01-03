@@ -1,7 +1,7 @@
 [Desktop Entry]
 Type=Application
 Name=Sruighlea
-Exec=Sruighlea
+Exec=./run.sh
 Icon=icon
 Comment=A database manager for FanacalCharacters.
 Categories=Utility;

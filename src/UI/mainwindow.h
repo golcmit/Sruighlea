@@ -1,5 +1,5 @@
 #include <QMainWindow>
-
+#include "./../Models/Character.h"
 class QTableView;
 class QTabWidget;
 class QSqlQueryModel;
@@ -12,7 +12,9 @@ class QLabel;
 class QDateEdit;
 class QTextEdit;
 class QDebug;
+
 class MainWindow : public QMainWindow
+
 
 {
     Q_OBJECT
@@ -29,6 +31,9 @@ private slots:
     void on_characterSelectionChanged();
 
 private:
+    void displayBasicInfo(const Character &details);
+    void displayCareer(const Character &details);
+    void displayRelationships(const Character &details);
     void setupUI();
     void setupCharacterListView(QSplitter *splitter);
     void setupCharacterDetailView(QSplitter *splitter);
@@ -54,4 +59,13 @@ private:
     QLineEdit *speciesLineEdit =nullptr;
     QTextEdit *wandTextEdit =nullptr;
     QTextEdit *notesTextEdit =nullptr;
+    QLineEdit *schoolLineEdit;
+    QLineEdit *houseLineEdit;
+    QLineEdit *lineageLineEdit;
+    QWidget *careerTab;
+    QTextEdit *academicDisplayText;
+    QTextEdit *occupationDisplayText;
+    QWidget *relationTab;        // ★ 追加
+    QTextEdit *relationDisplayText;
+    void setupCareerTab();
 };
