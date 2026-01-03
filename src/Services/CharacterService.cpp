@@ -236,10 +236,36 @@ QList<AddressHistory> CharacterService::getAddressHistory(int characterId)
     return QList<AddressHistory>();
 }
 
+/**
+ * @brief キャラクター情報の更新
+ */
 bool CharacterService::updateCharacter(const Character& character)
 {
-    Q_UNUSED(character);
-    return false;
+    QSqlQuery query;
+    query.prepare(
+        "UPDATE characters SET "
+        "full_name = :full_name, sort_name = :sort_name, "
+        "blood_status = :blood_status, patronus = :patronus, "
+        "species = :species, notes = :notes, "
+        "birth_date = :birth_date, death_date = :death_date "
+        "WHERE id = :id"
+    );
+
+    query.bindValue(":full_name", character.fullName);
+    query.bindValue(":sort_name", character.sortName);
+    query.bindValue(":blood_status", character.bloodStatus);
+    query.bindValue(":patronus", character.patronus);
+    query.bindValue(":species", character.species);
+    query.bindValue(":notes", character.notes);
+    query.bindValue(":birth_date", character.birthDate.toString(Qt::ISODate));
+    query.bindValue(":death_date", character.deathDate.toString(Qt::ISODate));
+    query.bindValue(":id", character.id);
+
+    if (!query.exec()) {
+        Logger::instance().error("Failed to update character: " + query.lastError().text());
+        return false;
+    }
+    return true;
 }
 
 bool CharacterService::deleteCharacter(int characterId)

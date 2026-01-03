@@ -16,10 +16,6 @@
 // QSqlQueryModel を使うので前方宣言（または include）
 class QSqlQueryModel;
 
-/* * ★削除★
- * 古い CharacterData struct は不要なので削除する
- * struct CharacterData { ... };
- */
 
 class CharacterService : public QObject
 {
@@ -36,7 +32,7 @@ public:
     ...
     */
 
-    // --- WBS 1.3.2: 新しい閲覧系メソッド ---
+  
 
     /**
      * @brief メインの一覧表示用のモデルを取得する (id, full_name)

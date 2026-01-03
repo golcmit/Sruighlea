@@ -14,7 +14,7 @@ struct AcademicRecord {
     bool isNewt = false;
     QString notes;
 
-    // ★ 追加：JOIN で取得する科目名
+   
     QString subjectName;
 
     bool isValid() const { return id != -1; }

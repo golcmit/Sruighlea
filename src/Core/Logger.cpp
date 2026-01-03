@@ -5,12 +5,11 @@
 #include <QTextCodec>
 #include <QDebug>
 
-// ★ 削除: この行を削除します
-// Logger* Logger::m_instance = nullptr;
+
 
 Logger& Logger::instance()
 {
-    // ★ 修正: この方式に変更します
+   
     // プログラム終了時に自動的にデストラクタが呼ばれます
     static Logger logger_instance;
     return logger_instance;

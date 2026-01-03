@@ -40,6 +40,7 @@ private:
     void loadCharacterList();
     void updateCharacterViewModel(QSqlQueryModel *newModel);
     void setupBasicInfoTab();
+    void setEditMode(bool editable);
     QTableView *characterTableView =nullptr;
     QWidget *characterDetailsView =nullptr; // Container for text edit and button
     QTabWidget *mainTabWidget =nullptr;
@@ -47,6 +48,7 @@ private:
     CharacterService *characterService =nullptr;
     QLineEdit *searchLineEdit =nullptr;
     QPushButton *addCharacterButton =nullptr;
+    QPushButton *editCharacterButton =nullptr;
     QWidget *basicInfoTab =nullptr;
     QFormLayout *basicInfoLayout =nullptr;
     

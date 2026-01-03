@@ -19,6 +19,7 @@
 #include <QDateEdit>
 #include <QTextEdit>
 #include <QDebug>
+#include <QSqlQuery>
 /**
  * @brief MainWindowのコンストラクタ
  * @param parent 親ウィジェット
@@ -96,9 +97,10 @@ void MainWindow::setupUI()
             this, &MainWindow::on_searchTextChanged);
     connect(addCharacterButton, &QPushButton::clicked,
             this, &MainWindow::on_addCharacterButton_clicked);
+     */
     connect(editCharacterButton, &QPushButton::clicked,
             this, &MainWindow::on_editCharacterButton_clicked);
-    */
+   
 }
 
 /**
@@ -352,7 +354,38 @@ void MainWindow::on_characterTableView_clicked(const QModelIndex &index)
         displayRelationships(details);
     }
 }
+void MainWindow::on_editCharacterButton_clicked()
+{
+    // 現在のボタンの状態で挙動を分ける
+    if (editCharacterButton->text() == "Edit Character") {
+        // 編集モードへ移行
+        setEditMode(true);
+    } else {
+        // 保存処理の実行
+        Character updatedData;
+        // UIからデータを吸い上げる (IDは保持しておく必要がある)
+        // ここでは characterTableView の現在選択されている行からIDを取得
+        QModelIndex currentIndex = characterTableView->currentIndex();
+        updatedData.id = characterListModel->data(characterListModel->index(currentIndex.row(), 0)).toInt();
+        
+        updatedData.fullName = fullNameLineEdit->text();
+        updatedData.sortName = sortNameLineEdit->text();
+        updatedData.bloodStatus = bloodStatusLineEdit->text();
+        updatedData.patronus = patronusLineEdit->text();
+        updatedData.species = speciesLineEdit->text();
+        updatedData.birthDate = birthDateEdit->date();
+        updatedData.deathDate = deathDateEdit->date();
+        updatedData.notes = notesTextEdit->toPlainText();
 
+        if (characterService->updateCharacter(updatedData)) {
+            setEditMode(false);
+            loadCharacterList(); // リストを再読み込みして反映
+            QMessageBox::information(this, "Success", "Character updated successfully.");
+        } else {
+            QMessageBox::critical(this, "Error", "Failed to update character.");
+        }
+    }
+}
 
 /**
  * @brief 検索テキストが変更された時の処理
@@ -409,49 +442,39 @@ void MainWindow::on_addCharacterButton_clicked()
  * 編集ダイアログを表示して更新を行う
  * テストモード時はモードレスダイアログ、通常時はモーダルダイアログを使用
  */
-void MainWindow::on_editCharacterButton_clicked()
+/**
+ * @brief キャラクター情報の更新
+ */
+
+/**
+ * @brief 詳細ビューの編集可否を切り替える
+ * @param editable trueで編集可能、falseで読み取り専用
+ */
+void MainWindow::setEditMode(bool editable)
 {
-    /*
-    // 選択された行のキャラクターIDを取得
-    QModelIndexList selection = characterTableView->selectionModel()->selectedRows();
-    if (selection.isEmpty()) {
-        // 通常、ボタンが無効化されているため、この条件には到達しないはず
-        return;
-    }
-    QModelIndex idIndex = characterListModel->index(selection.first().row(), 0);
-    int characterId = characterListModel->data(idIndex).toInt();
+    // 基本情報のロック解除/ロック
+    fullNameLineEdit->setReadOnly(!editable);
+    sortNameLineEdit->setReadOnly(!editable);
+    bloodStatusLineEdit->setReadOnly(!editable);
+    patronusLineEdit->setReadOnly(!editable);
+    speciesLineEdit->setReadOnly(!editable);
+    birthDateEdit->setReadOnly(!editable);
+    deathDateEdit->setReadOnly(!editable);
+    wandTextEdit->setReadOnly(!editable);
+    notesTextEdit->setReadOnly(!editable);
+    
+    // 所属情報は、将来的にコンボボックス選択にするため一旦据え置き
+    // schoolLineEdit->setReadOnly(!editable); 
 
-    // キャラクターの完全な詳細データを取得
-    CharacterData currentData = characterService->getCharacterDetails(characterId);
-    if (!currentData.isValid()) {
-        Logger::instance().error("Could not fetch character details for editing.");
-        QMessageBox::critical(this, "Error", "Could not fetch character details.");
-        return;
+    // ボタンのテキスト変更（例：Edit -> Save）
+    if (editable) {
+        editCharacterButton->setText("Save Changes");
+    } else {
+        editCharacterButton->setText("Edit Character");
     }
-
-#ifdef QT_TESTLIB_LIB
-    // テストモード時：モードレスダイアログを開く（テストの継続を許可）
-    auto* dialog = new AddCharacterDialog(currentData, this);
-    dialog->setAttribute(Qt::WA_DeleteOnClose);
-    dialog->open();
-#else
-    // 通常モード時：モーダルダイアログを開く
-    AddCharacterDialog dialog(currentData, this);
-    if (dialog.exec() == QDialog::Accepted) {
-        // ダイアログから更新されたデータを取得
-        CharacterData updatedData = dialog.getCharacterData();
-        
-        // データベースを更新
-        if (characterService->updateCharacter(updatedData)) {
-            loadCharacterList(); // リストを更新
-        } else {
-            // 更新失敗時のエラーメッセージ
-            QMessageBox::critical(this, "Error", "Failed to update character.");
-        }
-    }
-#endif
-*/
 }
+
+
 
 /**
  * @brief キャラクタービューのモデルを更新
