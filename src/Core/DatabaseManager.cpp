@@ -49,13 +49,16 @@ QSqlDatabase DatabaseManager::database()
 // データベース接続を閉じる関数
 void DatabaseManager::closeDatabase()
 {
-    // 現在の接続名を取得
-    QString connectionName = QSqlDatabase::database().connectionName();
-    // データベースが開いているか確認
-    if (QSqlDatabase::database().isOpen()) {
-        // 開いていれば閉じる
-        QSqlDatabase::database().close();
-    }
-    // データベース接続を削除し、リソースを解放する
+    // 接続名を保持
+    QString connectionName;
+    {
+        // スコープを限定して、dbオブジェクトがremoveDatabaseの前に確実に破棄されるようにする
+        QSqlDatabase db = QSqlDatabase::database();
+        connectionName = db.connectionName();
+        if (db.isOpen()) {
+            db.close();
+        }
+    } 
+    // dbオブジェクトが消えた後に削除（これ重要！）
     QSqlDatabase::removeDatabase(connectionName);
 }

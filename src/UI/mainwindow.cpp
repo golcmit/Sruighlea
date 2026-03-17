@@ -1,3 +1,5 @@
+//mainwindow.cpp
+
 #include "mainwindow.h"
 #include "../Services/CharacterService.h"
 //#include "addcharacterdialog.h"
@@ -312,7 +314,7 @@ void MainWindow::displayCareer(const Character &details)
  */
 void MainWindow::displayRelationships(const Character &details)
 {
-    // ここに QSqlQuery はもういりません
+
     QString relText;
     for (const auto &rel : details.relationships) {
         relText += QString("・%1 : %2\n").arg(rel.relationshipTypeName).arg(rel.toCharacterName);

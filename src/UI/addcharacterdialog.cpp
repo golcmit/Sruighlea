@@ -88,4 +88,6 @@ CharacterData AddCharacterDialog::getCharacterData() const
     data.bloodStatus = bloodStatusComboBox->currentText(); // 血統の選択内容を取得
     data.birthDate = birthDateEdit->date(); // 生年月日の入力内容を取得
     return data; // データを返す
+
+    //
 }

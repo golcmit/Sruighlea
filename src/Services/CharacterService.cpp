@@ -42,14 +42,16 @@ Character CharacterService::getCharacterDetails(int characterId)
         "LEFT JOIN lineages l ON c.lineage_id = l.id "
         "WHERE c.id = :id"
     );
+    //:id に値を埋める（SQLインジェクション対策）
     query.bindValue(":id", characterId);
-
+    
+    //SQL実行
     if (!query.exec() || !query.next()) {
         Logger::instance().error("Failed to fetch character basic info: " + query.lastError().text());
         return c;
     }
 
-    // 基本フィールドのセット
+    // 値の取り出し
     c.id = query.value("id").toInt();
     c.fullName = query.value("full_name").toString();
     c.sortName = query.value("sort_name").toString();
