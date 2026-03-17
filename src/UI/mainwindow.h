@@ -12,7 +12,15 @@ class QLabel;
 class QDateEdit;
 class QTextEdit;
 class QDebug;
+class Character
+{
+public:
+    QString formatAcademics() const;
+    QString formatOccupations() const;
 
+    QVector<AcademicRecord> academics;
+    QVector<OccupationRecord> occupations;
+};
 class MainWindow : public QMainWindow
 
 
@@ -40,7 +48,19 @@ private:
     void loadCharacterList();
     void updateCharacterViewModel(QSqlQueryModel *newModel);
     void setupBasicInfoTab();
+    //setupBasicInfoTabの代替
+    void createBasicInfoWidgets();
+    void configureBasicInfoWidgets();
+    void layoutBasicInfoWidgets();
+
+    void setupCareerTab();
     void setEditMode(bool editable);
+
+
+
+
+
+
     QTableView *characterTableView =nullptr;
     QWidget *characterDetailsView =nullptr; // Container for text edit and button
     QTabWidget *mainTabWidget =nullptr;
@@ -69,5 +89,5 @@ private:
     QTextEdit *occupationDisplayText;
     QWidget *relationTab;        // ★ 追加
     QTextEdit *relationDisplayText;
-    void setupCareerTab();
+    
 };

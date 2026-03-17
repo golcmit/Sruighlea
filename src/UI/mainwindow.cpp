@@ -131,16 +131,8 @@ void MainWindow::setupCharacterListView(QSplitter *splitter)
 
 
 
-void MainWindow::setupBasicInfoTab()
+void MainWindow::createBasicInfoWidgets()
 {
-    qDebug() << "BasicInfoTab: Start";
-    // 1. タブ本体となるウィジェットとレイアウトを作成
-    basicInfoTab = new QWidget(this);
-    basicInfoLayout = new QFormLayout(basicInfoTab); // フォームレイアウト
-    qDebug() << "BasicInfoTab: Widgets creating...";
-    basicInfoLayout->setContentsMargins(10, 10, 10, 10);
-    basicInfoLayout->setSpacing(10);
-
     // 2. 各フィールドのウィジェットをインスタンス化
     fullNameLineEdit = new QLineEdit(this);
     sortNameLineEdit = new QLineEdit(this);
@@ -154,14 +146,15 @@ void MainWindow::setupBasicInfoTab()
     schoolLineEdit = new QLineEdit(this);
     houseLineEdit = new QLineEdit(this);
     lineageLineEdit = new QLineEdit(this);
-    
-
-    // 複数行テキスト
     wandTextEdit = new QTextEdit(this);
-    wandTextEdit->setFixedHeight(80); // 高さを固定 (例)
     notesTextEdit = new QTextEdit(this);
-    notesTextEdit->setFixedHeight(100); // 高さを固定 (例)
-    qDebug() << "BasicInfoTab: Row adding...";
+    qDebug() << "BasicInfoTab: Row adding..."
+}
+
+void MainWindow::configureBasicInfoWidgets()
+{
+    
+    
     // ★ WBS 2.0 (閲覧フェーズ) のため、すべて読み取り専用に設定
     fullNameLineEdit->setReadOnly(true);
     sortNameLineEdit->setReadOnly(true);
@@ -175,9 +168,11 @@ void MainWindow::setupBasicInfoTab()
     schoolLineEdit->setReadOnly(true);
     houseLineEdit->setReadOnly(true);
     lineageLineEdit->setReadOnly(true);
+}
 
 
-
+void MainWindow::layoutBasicInfoWidgets()
+{
     // 3. レイアウトにウィジェットを追加
     basicInfoLayout->addRow(new QLabel("Full Name:", this), fullNameLineEdit);
     basicInfoLayout->addRow(new QLabel("Sort Name:", this), sortNameLineEdit);
@@ -188,11 +183,25 @@ void MainWindow::setupBasicInfoTab()
     basicInfoLayout->addRow(new QLabel("Species:", this), speciesLineEdit);
     basicInfoLayout->addRow(new QLabel("Wand (JSON):", this), wandTextEdit);
     basicInfoLayout->addRow(new QLabel("Notes:", this), notesTextEdit);
-        // レイアウトへの追加（お好みの位置に）
+        // レイアウトへの追加
     basicInfoLayout->addRow(new QLabel("School:", this), schoolLineEdit);
     basicInfoLayout->addRow(new QLabel("House:", this), houseLineEdit);
     basicInfoLayout->addRow(new QLabel("Lineage:", this), lineageLineEdit);
+}
 
+void MainWindow::setupBasicInfoTab()
+{
+    qDebug() << "BasicInfoTab: Start";
+    // 1. タブ本体となるウィジェットとレイアウトを作成
+    basicInfoTab = new QWidget(this);
+    basicInfoLayout = new QFormLayout(basicInfoTab); // フォームレイアウト
+    qDebug() << "BasicInfoTab: Widgets creating...";
+    basicInfoLayout->setContentsMargins(10, 10, 10, 10);
+    basicInfoLayout->setSpacing(10);
+    //機能呼び出し
+    createBasicInfoWidgets();
+    configureBasicInfoWidgets();
+    layoutBasicInfoWidgets();
     // 4. QTabWidget にこのタブを追加
     qDebug() << "BasicInfoTab: Adding to mainTabWidget. mainTabWidget is:" << mainTabWidget;
 
@@ -287,26 +296,50 @@ void MainWindow::displayBasicInfo(const Character &details)
 /**
  * @brief 経歴（学業・職歴）タブの表示更新
  */
-void MainWindow::displayCareer(const Character &details)
-{
-    // 学業情報の整形
-    QString acText;
-    for (const auto &ac : details.academics) {
-        QString exam = ac.isOwl ? " [O.W.L.]" : (ac.isNewt ? " [N.E.W.T.]" : "");
-        acText += QString("Year %1: %2 - Grade: %3%4\n")
-                    .arg(ac.academicYear).arg(ac.subjectName).arg(ac.grade).arg(exam);
-    }
-    academicDisplayText->setPlainText(acText);
 
-    // 職歴情報の整形
-    QString ocText;
-    for (const auto &oc : details.occupations) {
+//学業情報
+
+QString Character::formatAcademics() const
+{
+    QString text;
+
+    QStringList lines;
+    for (const auto &ac : academics) {
+        QString exam = ac.isOwl ? " [O.W.L.]" : (ac.isNewt ? " [N.E.W.T.]" : "");
+
+        lines << QString("Year %1: %2 - Grade: %3%4")
+                    .arg(ac.academicYear)
+                    .arg(ac.subjectName)
+                    .arg(ac.grade)
+                    .arg(exam);
+    }
+
+    return lines.join("\n");
+}
+
+
+QString Character::formatOccupations() const
+{
+    QString text;
+
+    QStringList lines;
+    for (const auto &oc : occupations) {
         QString start = oc.startDate.toString("yyyy");
         QString end = oc.endDate.isValid() ? oc.endDate.toString("yyyy") : "Present";
-        ocText += QString("%1 at %2 (%3 - %4)\n")
-                    .arg(oc.occupation).arg(oc.organization).arg(start).arg(end);
+
+        lines << QString("%1 at %2 (%3 - %4)")
+                    .arg(oc.occupation)
+                    .arg(oc.organization)
+                    .arg(start)
+                    .arg(end);
     }
-    occupationDisplayText->setPlainText(ocText);
+
+    return lines.join;
+}
+void MainWindow::displayCareer(const Character &details)
+{
+    academicDisplayText->setPlainText(details.formatAcademics());
+    occupationDisplayText->setPlainText(details.formatOccupations());
 }
 
 /**
